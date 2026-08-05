@@ -13,6 +13,23 @@ return new class extends Migration
     {
         Schema::create('pacientes', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('user_id')
+                ->constrained()
+                ->cascadeOnDelete();
+
+            $table->string('cpf', 14)->unique();
+
+            $table->enum('sexo', ['M', 'F']);
+
+            $table->date('data_nascimento');
+
+            $table->string('telefone',20);
+
+            $table->string('cidade');
+
+            $table->string('profissao')->nullable();
+
             $table->timestamps();
         });
     }
