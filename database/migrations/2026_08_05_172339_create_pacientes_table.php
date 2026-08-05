@@ -18,15 +18,15 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->string('cpf', 14)->unique();
+            $table->string('cpf', 14)->unique()->nullable();
 
-            $table->enum('sexo', ['M', 'F']);
+            $table->enum('sexo', ['M', 'F'])->nullable();
 
-            $table->date('data_nascimento');
+            $table->date('data_nascimento')->nullable();
 
-            $table->string('telefone',20);
+            $table->string('telefone', 20)->nullable();
 
-            $table->string('cidade');
+            $table->string('cidade')->nullable();
 
             $table->string('profissao')->nullable();
 
