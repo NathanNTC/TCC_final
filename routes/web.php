@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PerfilController;
 
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -19,6 +20,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/perfil', [PerfilController::class, 'index'])
         ->name('perfil.index');Route::get('/perfil', [PerfilController::class, 'index'])
         ->name('perfil.index');
+
+    Route::post('/perfil', [PerfilController::class, 'store'])
+        ->name('perfil.store');
+
 });
 
 require __DIR__.'/auth.php';

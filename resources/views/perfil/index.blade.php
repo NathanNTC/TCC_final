@@ -2,38 +2,64 @@
 
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Complete seu Perfil
+            Perfil do Paciente
         </h2>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="bg-white shadow rounded-lg">
+            @if (session('success'))
+                <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                <div class="p-6">
+            @if ($errors->any())
+                <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    <strong>Corrija os seguintes erros:</strong>
 
-                    <h3 class="text-2xl font-bold mb-4">
-                        Bem-vindo ao TR-IA-GEM
-                    </h3>
+                    <ul class="mt-2 list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                    <p class="mb-4">
-                        Sua conta foi criada com sucesso.
-                    </p>
+            <form method="POST" action="{{ route('perfil.store') }}">
+                @csrf
 
-                    <p class="mb-4">
-                        Antes de iniciar uma triagem, precisamos completar seu cadastro.
-                    </p>
+                {{-- Dados pessoais --}}
+                @include('perfil.components.dados-pessoais')
 
-                    <hr class="my-6">
+                {{-- Localização --}}
+                @include('perfil.components.localizacao')
 
-                    <p class="text-gray-600">
-                        O formulário do perfil será implementado na próxima etapa.
-                    </p>
+                {{-- Informações de saúde --}}
+                @include('perfil.components.inf_saude.deficiencias')
 
+                @include('perfil.components.inf_saude.problemas-de-saude-previos')
+
+                @include('perfil.components.inf_saude.historico-familiar')
+
+                @include('perfil.components.inf_saude.medicamentos')
+
+                @include('perfil.components.inf_saude.alergias')
+
+                {{-- Hábitos --}}
+                @include('perfil.components.habitos')
+
+                <div class="flex justify-end">
+                    <button
+                        type="submit"
+                        class="px-6 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-700"
+                    >
+                        Salvar perfil
+                    </button>
                 </div>
 
-            </div>
+            </form>
 
         </div>
     </div>

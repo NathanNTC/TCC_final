@@ -16,7 +16,8 @@ class Paciente extends Model
         'data_nascimento',
         'telefone',
         'cidade',
-        'profissao'
+        'estado',
+        'profissao',
     ];
 
     public function user()
