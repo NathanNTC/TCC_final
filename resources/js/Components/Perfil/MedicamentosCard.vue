@@ -10,9 +10,7 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar', {
-        secao: 'medicamentos',
-    }))
+    router.visit('/perfil/editar/medicamentos')
 }
 </script>
 
@@ -32,8 +30,19 @@ function editar() {
             </button>
         </template>
 
+        <!-- Nenhum medicamento -->
         <div
-            v-if="medicamentos.length"
+            v-if="!medicamentos.length"
+            class="rounded-xl border border-dashed border-gray-300 p-6 text-center"
+        >
+            <p class="text-gray-600">
+                Nenhum medicamento informado.
+            </p>
+        </div>
+
+        <!-- Lista de medicamentos -->
+        <div
+            v-else
             class="space-y-4"
         >
 
@@ -47,34 +56,37 @@ function editar() {
                     {{ medicamento.nome }}
                 </h3>
 
-                <div class="mt-2 grid grid-cols-1 gap-3 text-sm md:grid-cols-3">
+                <div class="mt-3 grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
 
+                    <!-- Dosagem -->
                     <div>
-                        <span class="text-gray-500">
-                            Dose
-                        </span>
+                        <p class="text-gray-500">
+                            Dosagem
+                        </p>
 
-                        <p class="font-medium text-gray-900">
+                        <p class="mt-1 font-medium text-gray-900">
                             {{ medicamento.dosagem || 'Não informado' }}
                         </p>
                     </div>
 
+                    <!-- Frequência -->
                     <div>
-                        <span class="text-gray-500">
+                        <p class="text-gray-500">
                             Frequência
-                        </span>
+                        </p>
 
-                        <p class="font-medium text-gray-900">
+                        <p class="mt-1 font-medium text-gray-900">
                             {{ medicamento.frequencia || 'Não informado' }}
                         </p>
                     </div>
 
+                    <!-- Indicação -->
                     <div>
-                        <span class="text-gray-500">
-                            Motivo
-                        </span>
+                        <p class="text-gray-500">
+                            Indicação
+                        </p>
 
-                        <p class="font-medium text-gray-900">
+                        <p class="mt-1 font-medium text-gray-900">
                             {{ medicamento.indicacao || 'Não informado' }}
                         </p>
                     </div>
@@ -84,10 +96,6 @@ function editar() {
             </div>
 
         </div>
-
-        <p v-else class="text-gray-600">
-            Nenhum medicamento informado.
-        </p>
 
     </PerfilCard>
 </template>

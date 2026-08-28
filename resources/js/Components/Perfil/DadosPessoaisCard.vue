@@ -15,9 +15,7 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar', {
-        secao: 'dados-pessoais',
-    }))
+    router.visit(route('perfil.editar.dados-pessoais'))
 }
 </script>
 
@@ -26,7 +24,6 @@ function editar() {
         titulo="Dados pessoais"
         descricao="Informações básicas do paciente"
     >
-
         <template #acao>
             <button
                 type="button"
@@ -39,15 +36,23 @@ function editar() {
 
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 
+            <!-- CPF -->
             <div>
-                <p class="text-sm text-gray-500">CPF</p>
+                <p class="text-sm text-gray-500">
+                    CPF
+                </p>
+
                 <p class="mt-1 font-medium text-gray-900">
                     {{ paciente.cpf || 'Não informado' }}
                 </p>
             </div>
 
+            <!-- SEXO -->
             <div>
-                <p class="text-sm text-gray-500">Sexo</p>
+                <p class="text-sm text-gray-500">
+                    Sexo
+                </p>
+
                 <p class="mt-1 font-medium text-gray-900">
                     {{
                         paciente.sexo === 'M'
@@ -59,6 +64,7 @@ function editar() {
                 </p>
             </div>
 
+            <!-- DATA DE NASCIMENTO -->
             <div>
                 <p class="text-sm text-gray-500">
                     Data de nascimento
@@ -69,38 +75,51 @@ function editar() {
                 </p>
             </div>
 
+            <!-- TELEFONE -->
             <div>
-                <p class="text-sm text-gray-500">Telefone</p>
+                <p class="text-sm text-gray-500">
+                    Telefone
+                </p>
 
                 <p class="mt-1 font-medium text-gray-900">
                     {{ paciente.telefone || 'Não informado' }}
                 </p>
             </div>
 
+            <!-- CIDADE -->
             <div>
-                <p class="text-sm text-gray-500">Cidade</p>
+                <p class="text-sm text-gray-500">
+                    Cidade
+                </p>
 
                 <p class="mt-1 font-medium text-gray-900">
                     {{ paciente.cidade || 'Não informado' }}
                 </p>
             </div>
 
+            <!-- ESTADO -->
             <div>
-                <p class="text-sm text-gray-500">Estado</p>
+                <p class="text-sm text-gray-500">
+                    Estado
+                </p>
 
                 <p class="mt-1 font-medium text-gray-900">
                     {{ paciente.estado || 'Não informado' }}
                 </p>
             </div>
 
+            <!-- PROFISSÃO -->
             <div>
-                <p class="text-sm text-gray-500">Profissão</p>
+                <p class="text-sm text-gray-500">
+                    Profissão
+                </p>
 
                 <p class="mt-1 font-medium text-gray-900">
                     {{ paciente.profissao || 'Não informado' }}
                 </p>
             </div>
 
+            <!-- TIPO SANGUÍNEO -->
             <div>
                 <p class="text-sm text-gray-500">
                     Tipo sanguíneo
@@ -112,6 +131,5 @@ function editar() {
             </div>
 
         </div>
-
     </PerfilCard>
 </template>

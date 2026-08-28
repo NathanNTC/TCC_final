@@ -10,18 +10,16 @@ const props = defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar', {
-        secao: 'deficiencias',
-    }))
+    router.visit(route('perfil.editar.deficiencias'))
 }
 
 const nomes = {
-    fisica: 'Mobilidade',
-    visual: 'Cegueira ou baixa visão',
-    auditiva: 'Surdez ou perda auditiva',
-    intelectual_cognitiva: 'Limitação intelectual ou cognitiva',
-    psicossocial: 'Condição psicossocial',
-    outros: 'Outra',
+    fisica: 'Física',
+    visual: 'Visual',
+    auditiva: 'Auditiva',
+    intelectual: 'Intelectual/Cognitiva',
+    psicossocial: 'Psicossocial',
+    outros: 'Outros',
     nao_possui: 'Não possui',
 }
 </script>
@@ -36,12 +34,13 @@ const nomes = {
             <button
                 type="button"
                 @click="editar"
-                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
             >
                 Editar
             </button>
         </template>
 
+        <!-- DEFICIÊNCIAS -->
         <div
             v-if="perfilSaude?.deficiencias?.length"
             class="flex flex-wrap gap-2"
@@ -59,15 +58,16 @@ const nomes = {
             v-else
             class="text-gray-600"
         >
-            Nenhuma necessidade informada.
+            Nenhuma necessidade de acessibilidade informada.
         </p>
 
+        <!-- OUTROS -->
         <div
             v-if="perfilSaude?.deficiencia_outros_descricao"
             class="mt-5"
         >
             <p class="text-sm text-gray-500">
-                Outras informações
+                Outras deficiências
             </p>
 
             <p class="mt-1 whitespace-pre-line text-gray-900">
@@ -75,12 +75,13 @@ const nomes = {
             </p>
         </div>
 
+        <!-- NECESSIDADES -->
         <div
             v-if="perfilSaude?.necessidades_acessibilidade"
             class="mt-5"
         >
             <p class="text-sm text-gray-500">
-                Recursos de acessibilidade
+                Necessidades específicas
             </p>
 
             <p class="mt-1 whitespace-pre-line text-gray-900">

@@ -1,5 +1,5 @@
 <script setup>
-import { watch, ref } from 'vue'
+import { watch, ref, onMounted } from 'vue'
 
 const props = defineProps({
     form: {
@@ -10,12 +10,6 @@ const props = defineProps({
 
 const cidades = ref([])
 const carregandoCidades = ref(false)
-
-/*
-|--------------------------------------------------------------------------
-| ESTADOS
-|--------------------------------------------------------------------------
-*/
 
 const estados = [
     { sigla: 'AC', nome: 'Acre' },
@@ -49,7 +43,7 @@ const estados = [
 
 /*
 |--------------------------------------------------------------------------
-| MÁSCARA CPF
+| CPF
 |--------------------------------------------------------------------------
 */
 
@@ -61,17 +55,17 @@ function formatarCpf(event) {
 
     if (valor.length > 9) {
         valor = valor.replace(
-            /^(\d{3})(\d{3})(\d{3})(\d{2}).*/,
+            /^(\d{3})(\d{3})(\d{3})(\d{2})$/,
             '$1.$2.$3-$4'
         )
     } else if (valor.length > 6) {
         valor = valor.replace(
-            /^(\d{3})(\d{3})(\d{1,3}).*/,
+            /^(\d{3})(\d{3})(\d{1,3})$/,
             '$1.$2.$3'
         )
     } else if (valor.length > 3) {
         valor = valor.replace(
-            /^(\d{3})(\d{1,3}).*/,
+            /^(\d{3})(\d{1,3})$/,
             '$1.$2'
         )
     }
@@ -81,7 +75,7 @@ function formatarCpf(event) {
 
 /*
 |--------------------------------------------------------------------------
-| MÁSCARA TELEFONE
+| TELEFONE
 |--------------------------------------------------------------------------
 */
 
@@ -93,17 +87,17 @@ function formatarTelefone(event) {
 
     if (valor.length > 10) {
         valor = valor.replace(
-            /^(\d{2})(\d{5})(\d{4}).*/,
+            /^(\d{2})(\d{5})(\d{4})$/,
             '($1) $2-$3'
         )
     } else if (valor.length > 6) {
         valor = valor.replace(
-            /^(\d{2})(\d{4})(\d{0,4}).*/,
+            /^(\d{2})(\d{4})(\d{0,4})$/,
             '($1) $2-$3'
         )
     } else if (valor.length > 2) {
         valor = valor.replace(
-            /^(\d{2})(\d{0,5}).*/,
+            /^(\d{2})(\d{0,5})$/,
             '($1) $2'
         )
     }
@@ -113,24 +107,31 @@ function formatarTelefone(event) {
 
 /*
 |--------------------------------------------------------------------------
-| BUSCAR CIDADES PELA API DO IBGE
+| BUSCAR CIDADES
 |--------------------------------------------------------------------------
 */
 
-async function buscarCidades(estado) {
-
+async function buscarCidades(estado, limparCidade = true) {
     if (!estado) {
         cidades.value = []
-        props.form.cidade = ''
+
+        if (limparCidade) {
+            props.form.cidade = ''
+        }
+
         return
     }
 
     carregandoCidades.value = true
     cidades.value = []
-    props.form.cidade = ''
+
+    const cidadeAtual = props.form.cidade
+
+    if (limparCidade) {
+        props.form.cidade = ''
+    }
 
     try {
-
         const resposta = await fetch(
             `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado}/municipios`
         )
@@ -145,45 +146,68 @@ async function buscarCidades(estado) {
             a.nome.localeCompare(b.nome)
         )
 
-    } catch (erro) {
+        /*
+         * Na edição, mantém a cidade já cadastrada.
+         */
+        if (!limparCidade && cidadeAtual) {
+            const cidadeExiste = cidades.value.some(
+                cidade => cidade.nome === cidadeAtual
+            )
 
+            if (cidadeExiste) {
+                props.form.cidade = cidadeAtual
+            }
+        }
+
+    } catch (erro) {
         console.error('Erro ao buscar cidades:', erro)
 
     } finally {
-
         carregandoCidades.value = false
-
     }
 }
 
 /*
 |--------------------------------------------------------------------------
-| QUANDO O ESTADO MUDAR
+| MUDANÇA DE ESTADO
 |--------------------------------------------------------------------------
 */
 
 watch(
     () => props.form.estado,
-    (novoEstado) => {
-        buscarCidades(novoEstado)
+    (novoEstado, estadoAnterior) => {
+        if (novoEstado === estadoAnterior) {
+            return
+        }
+
+        buscarCidades(novoEstado, true)
     }
 )
 
 /*
 |--------------------------------------------------------------------------
-| TEMPLATE
+| CARREGAMENTO INICIAL
+|--------------------------------------------------------------------------
+|
+| Importante para a tela de edição.
+| Se o paciente já possui estado/cidade, carregamos as cidades
+| sem apagar a cidade cadastrada.
 |--------------------------------------------------------------------------
 */
+
+onMounted(() => {
+    if (props.form.estado) {
+        buscarCidades(props.form.estado, false)
+    }
+})
 </script>
 
 <template>
-
     <div>
 
         <!-- CABEÇALHO -->
 
         <div class="mb-8">
-
             <h2 class="text-2xl font-bold text-gray-800">
                 Dados pessoais
             </h2>
@@ -191,7 +215,6 @@ watch(
             <p class="mt-1 text-sm text-gray-500">
                 Informe seus dados básicos para completar seu perfil.
             </p>
-
         </div>
 
 
@@ -199,11 +222,9 @@ watch(
 
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 
-
             <!-- CPF -->
 
             <div>
-
                 <label class="block text-sm font-medium text-gray-700">
                     CPF
                     <span class="text-red-500">*</span>
@@ -229,14 +250,12 @@ watch(
                 >
                     {{ form.errors.cpf }}
                 </p>
-
             </div>
 
 
             <!-- SEXO -->
 
             <div>
-
                 <label class="block text-sm font-medium text-gray-700">
                     Sexo
                     <span class="text-red-500">*</span>
@@ -246,7 +265,6 @@ watch(
                     v-model="form.sexo"
                     class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-
                     <option value="">
                         Selecione
                     </option>
@@ -258,16 +276,20 @@ watch(
                     <option value="F">
                         Feminino
                     </option>
-
                 </select>
 
+                <p
+                    v-if="form.errors.sexo"
+                    class="mt-1 text-sm text-red-600"
+                >
+                    {{ form.errors.sexo }}
+                </p>
             </div>
 
 
             <!-- DATA DE NASCIMENTO -->
 
             <div>
-
                 <label class="block text-sm font-medium text-gray-700">
                     Data de nascimento
                     <span class="text-red-500">*</span>
@@ -285,14 +307,12 @@ watch(
                 >
                     {{ form.errors.data_nascimento }}
                 </p>
-
             </div>
 
 
             <!-- TELEFONE -->
 
             <div>
-
                 <label class="block text-sm font-medium text-gray-700">
                     Telefone
                     <span class="text-red-500">*</span>
@@ -314,14 +334,12 @@ watch(
                 >
                     {{ form.errors.telefone }}
                 </p>
-
             </div>
 
 
             <!-- ESTADO -->
 
             <div>
-
                 <label class="block text-sm font-medium text-gray-700">
                     Estado
                     <span class="text-red-500">*</span>
@@ -331,7 +349,6 @@ watch(
                     v-model="form.estado"
                     class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-
                     <option value="">
                         Selecione o estado
                     </option>
@@ -343,7 +360,6 @@ watch(
                     >
                         {{ estado.nome }}
                     </option>
-
                 </select>
 
                 <p
@@ -352,14 +368,12 @@ watch(
                 >
                     {{ form.errors.estado }}
                 </p>
-
             </div>
 
 
             <!-- CIDADE -->
 
             <div>
-
                 <label class="block text-sm font-medium text-gray-700">
                     Cidade
                     <span class="text-red-500">*</span>
@@ -370,9 +384,7 @@ watch(
                     :disabled="!form.estado || carregandoCidades"
                     class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm disabled:cursor-not-allowed disabled:bg-gray-100"
                 >
-
                     <option value="">
-
                         {{
                             !form.estado
                                 ? 'Selecione primeiro o estado'
@@ -380,7 +392,6 @@ watch(
                                     ? 'Carregando cidades...'
                                     : 'Selecione a cidade'
                         }}
-
                     </option>
 
                     <option
@@ -390,7 +401,6 @@ watch(
                     >
                         {{ cidade.nome }}
                     </option>
-
                 </select>
 
                 <p
@@ -399,14 +409,12 @@ watch(
                 >
                     {{ form.errors.cidade }}
                 </p>
-
             </div>
 
 
             <!-- PROFISSÃO -->
 
             <div class="md:col-span-2">
-
                 <label class="block text-sm font-medium text-gray-700">
                     Profissão
                 </label>
@@ -425,14 +433,12 @@ watch(
                 >
                     {{ form.errors.profissao }}
                 </p>
-
             </div>
 
 
             <!-- TIPO SANGUÍNEO -->
 
             <div>
-
                 <label class="block text-sm font-medium text-gray-700">
                     Tipo sanguíneo
                 </label>
@@ -441,49 +447,29 @@ watch(
                     v-model="form.tipo_sanguineo"
                     class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 >
-
                     <option value="">
                         Não informado
                     </option>
 
-                    <option value="A+">
-                        A+
-                    </option>
-
-                    <option value="A-">
-                        A-
-                    </option>
-
-                    <option value="B+">
-                        B+
-                    </option>
-
-                    <option value="B-">
-                        B-
-                    </option>
-
-                    <option value="AB+">
-                        AB+
-                    </option>
-
-                    <option value="AB-">
-                        AB-
-                    </option>
-
-                    <option value="O+">
-                        O+
-                    </option>
-
-                    <option value="O-">
-                        O-
-                    </option>
-
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
                 </select>
 
+                <p
+                    v-if="form.errors.tipo_sanguineo"
+                    class="mt-1 text-sm text-red-600"
+                >
+                    {{ form.errors.tipo_sanguineo }}
+                </p>
             </div>
 
         </div>
 
     </div>
-
 </template>

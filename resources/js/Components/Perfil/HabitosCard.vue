@@ -10,9 +10,7 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar', {
-        secao: 'habitos',
-    }))
+    router.visite('/perfil/editar/habitos')
 }
 </script>
 
@@ -26,54 +24,88 @@ function editar() {
             <button
                 type="button"
                 @click="editar"
-                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
             >
                 Editar
             </button>
         </template>
 
+
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 
+            <!-- TABAGISMO -->
             <div>
                 <p class="text-sm text-gray-500">
                     Tabagismo
                 </p>
 
                 <p class="mt-1 font-medium text-gray-900">
-                    {{ perfilSaude?.fumante ? 'Sim' : 'Não' }}
+                    {{
+                        perfilSaude?.fumante === true
+                            ? 'Sim'
+                            : perfilSaude?.fumante === false
+                                ? 'Não'
+                                : 'Não informado'
+                    }}
                 </p>
             </div>
 
+
+            <!-- ÁLCOOL -->
             <div>
                 <p class="text-sm text-gray-500">
                     Consumo de álcool
                 </p>
 
                 <p class="mt-1 font-medium text-gray-900">
-                    {{ perfilSaude?.alcoolismo ? 'Sim' : 'Não' }}
+                    {{
+                        perfilSaude?.alcoolismo === true
+                            ? 'Sim'
+                            : perfilSaude?.alcoolismo === false
+                                ? 'Não'
+                                : 'Não informado'
+                    }}
                 </p>
             </div>
 
+
+            <!-- DROGAS -->
             <div>
                 <p class="text-sm text-gray-500">
                     Uso de drogas
                 </p>
 
                 <p class="mt-1 font-medium text-gray-900">
-                    {{ perfilSaude?.uso_drogas ? 'Sim' : 'Não' }}
+                    {{
+                        perfilSaude?.uso_drogas === true
+                            ? 'Sim'
+                            : perfilSaude?.uso_drogas === false
+                                ? 'Não'
+                                : 'Não informado'
+                    }}
                 </p>
             </div>
 
+
+            <!-- ATIVIDADE FÍSICA -->
             <div>
                 <p class="text-sm text-gray-500">
                     Atividade física regular
                 </p>
 
                 <p class="mt-1 font-medium text-gray-900">
-                    {{ perfilSaude?.atividade_fisica_regular ? 'Sim' : 'Não' }}
+                    {{
+                        perfilSaude?.atividade_fisica_regular === true
+                            ? 'Sim'
+                            : perfilSaude?.atividade_fisica_regular === false
+                                ? 'Não'
+                                : 'Não informado'
+                    }}
                 </p>
             </div>
 
+
+            <!-- ALTURA -->
             <div>
                 <p class="text-sm text-gray-500">
                     Altura
@@ -81,13 +113,17 @@ function editar() {
 
                 <p class="mt-1 font-medium text-gray-900">
                     {{
-                        perfilSaude?.altura
+                        perfilSaude?.altura !== null &&
+                        perfilSaude?.altura !== undefined &&
+                        perfilSaude?.altura !== ''
                             ? `${perfilSaude.altura} m`
                             : 'Não informado'
                     }}
                 </p>
             </div>
 
+
+            <!-- PESO -->
             <div>
                 <p class="text-sm text-gray-500">
                     Peso
@@ -95,7 +131,9 @@ function editar() {
 
                 <p class="mt-1 font-medium text-gray-900">
                     {{
-                        perfilSaude?.peso
+                        perfilSaude?.peso !== null &&
+                        perfilSaude?.peso !== undefined &&
+                        perfilSaude?.peso !== ''
                             ? `${perfilSaude.peso} kg`
                             : 'Não informado'
                     }}

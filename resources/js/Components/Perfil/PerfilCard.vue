@@ -16,12 +16,10 @@ defineProps({
     <section
         class="rounded-2xl border border-gray-200 bg-white shadow-sm"
     >
-
         <!-- CABEÇALHO -->
         <div
             class="flex items-center justify-between border-b border-gray-100 px-6 py-5"
         >
-
             <div>
                 <h2 class="text-lg font-semibold text-gray-900">
                     {{ titulo }}
@@ -38,14 +36,11 @@ defineProps({
             <div>
                 <slot name="acao" />
             </div>
-
         </div>
-
 
         <!-- CONTEÚDO -->
         <div class="px-6 py-6">
             <slot />
         </div>
-
     </section>
 </template>

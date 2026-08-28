@@ -10,21 +10,18 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar', {
-        secao: 'historico-familiar',
-    }))
+    router.visit(route('perfil.editar.historico-familiar'))
 }
 
 const nomes = {
-    doenca_cardiovascular: 'Doença cardiovascular',
-    infarto: 'Infarto',
-    morte_subita: 'Morte súbita antes dos 60 anos',
+    infarto: 'Infarto ou doença cardíaca',
+    morte_subita: 'Morte súbita',
     diabetes: 'Diabetes',
-    hipertensao: 'Pressão alta',
+    hipertensao: 'Hipertensão',
     cancer_mama: 'Câncer de mama',
     cancer_colon: 'Câncer de intestino',
     cancer_prostata: 'Câncer de próstata',
-    doenca_genetica: 'Doença genética',
+    doencas_geneticas: 'Doença genética ou rara',
     outros: 'Outro',
     nao_possui: 'Não possui',
 }
@@ -40,16 +37,19 @@ const nomes = {
             <button
                 type="button"
                 @click="editar"
-                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                class="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
             >
                 Editar
             </button>
         </template>
 
+
+        <!-- CONDIÇÕES -->
         <div
             v-if="perfilSaude?.historico_familiar?.length"
             class="flex flex-wrap gap-2"
         >
+
             <span
                 v-for="item in perfilSaude.historico_familiar"
                 :key="item"
@@ -57,16 +57,24 @@ const nomes = {
             >
                 {{ nomes[item] || item }}
             </span>
+
         </div>
 
-        <p v-else class="text-gray-600">
+
+        <p
+            v-else
+            class="text-gray-600"
+        >
             Nenhum histórico familiar informado.
         </p>
 
+
+        <!-- DETALHES -->
         <div
             v-if="perfilSaude?.historico_familiar_detalhes"
             class="mt-5"
         >
+
             <p class="text-sm text-gray-500">
                 Detalhes
             </p>
@@ -74,6 +82,7 @@ const nomes = {
             <p class="mt-1 whitespace-pre-line text-gray-900">
                 {{ perfilSaude.historico_familiar_detalhes }}
             </p>
+
         </div>
 
     </PerfilCard>
