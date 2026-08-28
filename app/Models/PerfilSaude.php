@@ -15,6 +15,7 @@ class PerfilSaude extends Model
     protected $fillable = [
         'paciente_id',
 
+        // Dados básicos de saúde
         'tipo_sanguineo',
 
         // Deficiências
@@ -22,7 +23,7 @@ class PerfilSaude extends Model
         'deficiencia_outros_descricao',
         'necessidades_acessibilidade',
 
-        // Problemas de saúde
+        // Problemas de saúde prévios
         'problemas_saude_previos',
         'problemas_saude_detalhes',
 
@@ -39,31 +40,38 @@ class PerfilSaude extends Model
         'alcoolismo',
         'uso_drogas',
 
-        // Outros
+        // Cirurgias
         'cirurgias_previas',
+
+        // Atividade física
         'atividade_fisica_regular',
+
+        // Medidas
         'altura',
         'peso',
     ];
 
     protected $casts = [
-        // Campos JSON
+        // Campos armazenados como JSON
         'deficiencias' => 'array',
         'problemas_saude_previos' => 'array',
         'historico_familiar' => 'array',
         'alergias' => 'array',
 
-        // Booleanos
+        // Campos booleanos
         'fumante' => 'boolean',
         'alcoolismo' => 'boolean',
         'uso_drogas' => 'boolean',
         'atividade_fisica_regular' => 'boolean',
 
-        // Números
+        // Campos numéricos
         'altura' => 'decimal:2',
         'peso' => 'decimal:2',
     ];
 
+    /**
+     * Perfil de saúde pertence a um paciente.
+     */
     public function paciente(): BelongsTo
     {
         return $this->belongsTo(Paciente::class);

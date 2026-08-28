@@ -61,7 +61,6 @@ class StorePerfilRequest extends FormRequest
                 'max:255',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | INFORMAÇÕES DE SAÚDE
@@ -73,7 +72,6 @@ class StorePerfilRequest extends FormRequest
                 'string',
                 'max:10',
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -94,7 +92,7 @@ class StorePerfilRequest extends FormRequest
             'deficiencia_outros_descricao' => [
                 'nullable',
                 'string',
-                'max:1000',
+                'max:2000',
             ],
 
             'necessidades_acessibilidade' => [
@@ -102,7 +100,6 @@ class StorePerfilRequest extends FormRequest
                 'string',
                 'max:2000',
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -126,7 +123,6 @@ class StorePerfilRequest extends FormRequest
                 'max:2000',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | HISTÓRICO FAMILIAR
@@ -148,7 +144,6 @@ class StorePerfilRequest extends FormRequest
                 'string',
                 'max:2000',
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -172,7 +167,6 @@ class StorePerfilRequest extends FormRequest
                 'max:2000',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | HÁBITOS
@@ -191,7 +185,6 @@ class StorePerfilRequest extends FormRequest
                 'boolean',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | CIRURGIAS
@@ -204,7 +197,6 @@ class StorePerfilRequest extends FormRequest
                 'max:5000',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | ATIVIDADE FÍSICA
@@ -214,7 +206,6 @@ class StorePerfilRequest extends FormRequest
             'atividade_fisica_regular' => [
                 'boolean',
             ],
-
 
             /*
             |--------------------------------------------------------------------------
@@ -236,15 +227,21 @@ class StorePerfilRequest extends FormRequest
                 'max:500',
             ],
 
-
             /*
             |--------------------------------------------------------------------------
             | MEDICAMENTOS
             |--------------------------------------------------------------------------
+            |
+            | O paciente pode não utilizar nenhum medicamento.
+            |
             */
 
             'medicamentos' => [
                 'nullable',
+                'array',
+            ],
+
+            'medicamentos.*' => [
                 'array',
             ],
 
