@@ -14,7 +14,7 @@ use Illuminate\View\View;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Exibe a tela de cadastro.
      */
     public function create(): View
     {
@@ -22,22 +22,36 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
+     * Realiza o cadastro de um novo paciente.
      *
      * @throws ValidationException
      */
-    public function store(Request $request, PacienteService $pacienteService): RedirectResponse
-    {
+    public function store(
+        Request $request,
+        PacienteService $pacienteService
+    ): RedirectResponse {
+
         $dadosValidados = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:users,email'
+            ],
+            'password' => [
+                'required',
+                'confirmed',
+                Rules\Password::defaults(),
+            ],
         ]);
 
         $user = $pacienteService->cadastrar($dadosValidados);
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('perfil.index');
     }
 }
