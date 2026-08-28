@@ -30,9 +30,6 @@ class PerfilSaude extends Model
         'historico_familiar',
         'historico_familiar_detalhes',
 
-        // Medicamentos
-        'medicacoes_uso_continuo',
-
         // Alergias
         'alergias',
         'alergias_detalhes',

@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Paciente extends Model
 {
@@ -28,6 +29,11 @@ class Paciente extends Model
     public function perfilSaude()
     {
         return $this->hasOne(PerfilSaude::class);
+    }
+
+    public function medicamentos(): HasMany
+    {
+        return $this->hasMany(Medicamento::class);
     }
 
     public function triagens()
