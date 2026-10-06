@@ -13,7 +13,6 @@ import Medicamentos from '@/Components/Perfil/Medicamentos.vue'
 import Cirurgias from '@/Components/Perfil/Cirurgias.vue'
 import Habitos from '@/Components/Perfil/Habitos.vue'
 
-
 /*
 |--------------------------------------------------------------------------
 | PROPS
@@ -47,7 +46,6 @@ const props = defineProps({
     },
 })
 
-
 /*
 |--------------------------------------------------------------------------
 | FORMULÁRIO
@@ -56,50 +54,24 @@ const props = defineProps({
 
 const form = useForm({
 
-    /*
-    |--------------------------------------------------------------------------
-    | Dados pessoais
-    |--------------------------------------------------------------------------
-    */
-
+    // Dados pessoais
     cpf: props.paciente?.cpf ?? '',
-
     sexo: props.paciente?.sexo ?? '',
+    data_nascimento: props.paciente?.data_nascimento ?? '',
+    telefone: props.paciente?.telefone ?? '',
+    estado: props.paciente?.estado ?? '',
+    cidade: props.paciente?.cidade ?? '',
+    profissao: props.paciente?.profissao ?? '',
 
-    data_nascimento:
-        props.paciente?.data_nascimento ?? '',
-
-    telefone:
-        props.paciente?.telefone ?? '',
-
-    estado:
-        props.paciente?.estado ?? '',
-
-    cidade:
-        props.paciente?.cidade ?? '',
-
-    profissao:
-        props.paciente?.profissao ?? '',
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Tipo sanguíneo
-    |--------------------------------------------------------------------------
-    */
-
+    // Tipo sanguíneo
     tipo_sanguineo:
         props.perfilSaude?.tipo_sanguineo ?? '',
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Deficiências
-    |--------------------------------------------------------------------------
-    */
-
+    // Deficiências
     deficiencias:
-        props.perfilSaude?.deficiencias ?? [],
+        Array.isArray(props.perfilSaude?.deficiencias)
+            ? props.perfilSaude.deficiencias
+            : [],
 
     deficiencia_outros_descricao:
         props.perfilSaude?.deficiencia_outros_descricao ?? '',
@@ -107,80 +79,74 @@ const form = useForm({
     necessidades_acessibilidade:
         props.perfilSaude?.necessidades_acessibilidade ?? '',
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Problemas de saúde
-    |--------------------------------------------------------------------------
-    */
-
+    // Problemas de saúde
     problemas_saude_previos:
-        props.perfilSaude?.problemas_saude_previos ?? [],
+        Array.isArray(props.perfilSaude?.problemas_saude_previos)
+            ? props.perfilSaude.problemas_saude_previos
+            : [],
 
     problemas_saude_detalhes:
         props.perfilSaude?.problemas_saude_detalhes ?? '',
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Histórico familiar
-    |--------------------------------------------------------------------------
-    */
-
+    // Histórico familiar
     historico_familiar:
-        props.perfilSaude?.historico_familiar ?? [],
+        Array.isArray(props.perfilSaude?.historico_familiar)
+            ? props.perfilSaude.historico_familiar
+            : [],
 
     historico_familiar_detalhes:
         props.perfilSaude?.historico_familiar_detalhes ?? '',
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Alergias
-    |--------------------------------------------------------------------------
-    */
-
+    // Alergias
     alergias:
-        props.perfilSaude?.alergias ?? [],
+        Array.isArray(props.perfilSaude?.alergias)
+            ? props.perfilSaude.alergias
+            : [],
 
     alergias_detalhes:
         props.perfilSaude?.alergias_detalhes ?? '',
 
     alergias_reacoes:
-        props.perfilSaude?.alergias_reacoes ?? [],
+        Array.isArray(props.perfilSaude?.alergias_reacoes)
+            ? props.perfilSaude.alergias_reacoes
+            : [],
 
     alergias_observacoes:
         props.perfilSaude?.alergias_observacoes ?? '',
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Medicamentos
-    |--------------------------------------------------------------------------
-    */
-
+    // Medicamentos
     medicamentos:
-        props.medicamentos ?? [],
+        Array.isArray(props.medicamentos)
+            ? props.medicamentos.map((medicamento) => ({
+                id: medicamento.id ?? null,
+                nome: medicamento.nome ?? '',
+                dosagem: medicamento.dosagem ?? '',
+                frequencia: medicamento.frequencia ?? '',
+                indicacao: medicamento.indicacao ?? '',
+            }))
+            : [],
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cirurgias
-    |--------------------------------------------------------------------------
-    */
-
+    // Cirurgias
     cirurgias:
-        props.cirurgias ??
-        props.perfilSaude?.cirurgias ??
-        [],
+        Array.isArray(props.cirurgias)
+            ? props.cirurgias.map((cirurgia) => ({
+                id: cirurgia.id ?? null,
+                procedimento: cirurgia.procedimento ?? '',
+                ano: cirurgia.ano ?? '',
+                anestesia: cirurgia.anestesia ?? '',
+                complicacoes:
+                    Array.isArray(cirurgia.complicacoes)
+                        ? cirurgia.complicacoes
+                        : [],
+                implantes:
+                    Array.isArray(cirurgia.implantes)
+                        ? cirurgia.implantes
+                        : [],
+                observacoes: cirurgia.observacoes ?? '',
+            }))
+            : [],
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Hábitos
-    |--------------------------------------------------------------------------
-    */
-
+    // Hábitos
     fumante:
         props.perfilSaude?.fumante ?? false,
 
@@ -193,20 +159,13 @@ const form = useForm({
     atividade_fisica_regular:
         props.perfilSaude?.atividade_fisica_regular ?? false,
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Medidas corporais
-    |--------------------------------------------------------------------------
-    */
-
+    // Medidas
     altura:
         props.perfilSaude?.altura ?? '',
 
     peso:
         props.perfilSaude?.peso ?? '',
 })
-
 
 /*
 |--------------------------------------------------------------------------
@@ -217,7 +176,7 @@ const form = useForm({
 const titulos = {
     'dados-pessoais': 'Dados pessoais',
 
-    'deficiencias':
+    deficiencias:
         'Necessidades de acessibilidade',
 
     'problemas-saude':
@@ -226,60 +185,54 @@ const titulos = {
     'historico-familiar':
         'Histórico familiar',
 
-    'alergias':
+    alergias:
         'Alergias',
 
-    'medicamentos':
+    medicamentos:
         'Medicamentos e suplementos',
 
-    'cirurgias':
+    cirurgias:
         'Cirurgias anteriores',
 
-    'habitos':
+    habitos:
         'Hábitos e atividade física',
 }
-
 
 const titulo = computed(() => {
     return titulos[props.secao] ?? 'Editar perfil'
 })
 
-
 /*
 |--------------------------------------------------------------------------
-| ROTAS DE ATUALIZAÇÃO
+| ROTAS DE SALVAMENTO
 |--------------------------------------------------------------------------
-|
-| Cada seção agora possui seu próprio controller.
-|
 */
 
-const rotasAtualizacao = {
+const rotasSalvar = {
     'dados-pessoais':
-        'perfil.atualizar.dados-pessoais',
+        '/perfil/editar/dados-pessoais',
 
-    'deficiencias':
-        'perfil.atualizar.deficiencias',
+    deficiencias:
+        '/perfil/editar/deficiencias',
 
     'problemas-saude':
-        'perfil.atualizar.problemas-saude',
+        '/perfil/editar/problemas-saude',
 
     'historico-familiar':
-        'perfil.atualizar.historico-familiar',
+        '/perfil/editar/historico-familiar',
 
-    'alergias':
-        'perfil.atualizar.alergias',
+    alergias:
+        '/perfil/editar/alergias',
 
-    'medicamentos':
-        'perfil.atualizar.medicamentos',
+    medicamentos:
+        '/perfil/editar/medicamentos',
 
-    'cirurgias':
-        'perfil.atualizar.cirurgias',
+    cirurgias:
+        '/perfil/editar/cirurgias',
 
-    'habitos':
-        'perfil.atualizar.habitos',
+    habitos:
+        '/perfil/editar/habitos',
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -288,9 +241,8 @@ const rotasAtualizacao = {
 */
 
 function voltar() {
-    router.visit(route('perfil.index'))
+    router.visit('/perfil')
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -299,12 +251,9 @@ function voltar() {
 */
 
 function salvar() {
+    const url = rotasSalvar[props.secao]
 
-    const nomeRota =
-        rotasAtualizacao[props.secao]
-
-    if (!nomeRota) {
-
+    if (!url) {
         console.error(
             'Seção de perfil inválida:',
             props.secao
@@ -313,36 +262,49 @@ function salvar() {
         return
     }
 
-
-    form.put(
-        route(nomeRota),
-        {
-            preserveScroll: true,
-
-            onSuccess: () => {
-
-                router.visit(
-                    route('perfil.index')
-                )
-            },
-        }
+    console.log(
+        'Salvando seção:',
+        props.secao
     )
+
+    console.log(
+        'URL:',
+        url
+    )
+
+    console.log(
+        'Dados:',
+        form.data()
+    )
+
+    form.put(url, {
+        preserveScroll: true,
+
+        onSuccess: () => {
+            console.log(
+                'Perfil salvo com sucesso!'
+            )
+
+            router.visit('/perfil')
+        },
+
+        onError: (errors) => {
+            console.error(
+                'Erro ao salvar perfil:',
+                errors
+            )
+        },
+    })
 }
 </script>
 
-
 <template>
-
     <Head :title="`Editar - ${titulo}`" />
 
     <AuthenticatedLayout>
-
         <div class="mx-auto max-w-5xl px-4 py-8">
 
-
-            <!-- ========================================================= -->
             <!-- CABEÇALHO -->
-            <!-- ========================================================= -->
 
             <div class="mb-6">
 
@@ -354,11 +316,9 @@ function salvar() {
                     ← Voltar para o perfil
                 </button>
 
-
                 <h1 class="text-3xl font-bold text-gray-900">
                     {{ titulo }}
                 </h1>
-
 
                 <p class="mt-2 text-gray-600">
                     Atualize somente as informações desta seção.
@@ -366,99 +326,69 @@ function salvar() {
 
             </div>
 
-
-            <!-- ========================================================= -->
             <!-- FORMULÁRIO -->
-            <!-- ========================================================= -->
 
             <div
                 class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
             >
 
-
-                <!-- ===================================================== -->
                 <!-- DADOS PESSOAIS -->
-                <!-- ===================================================== -->
 
                 <DadosPessoais
                     v-if="secao === 'dados-pessoais'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- DEFICIÊNCIAS -->
-                <!-- ===================================================== -->
 
                 <Deficiencias
                     v-else-if="secao === 'deficiencias'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- PROBLEMAS DE SAÚDE -->
-                <!-- ===================================================== -->
 
                 <ProblemasSaude
                     v-else-if="secao === 'problemas-saude'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- HISTÓRICO FAMILIAR -->
-                <!-- ===================================================== -->
 
                 <HistoricoFamiliar
                     v-else-if="secao === 'historico-familiar'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- ALERGIAS -->
-                <!-- ===================================================== -->
 
                 <Alergias
                     v-else-if="secao === 'alergias'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- MEDICAMENTOS -->
-                <!-- ===================================================== -->
 
                 <Medicamentos
                     v-else-if="secao === 'medicamentos'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- CIRURGIAS -->
-                <!-- ===================================================== -->
 
                 <Cirurgias
                     v-else-if="secao === 'cirurgias'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- HÁBITOS -->
-                <!-- ===================================================== -->
 
                 <Habitos
                     v-else-if="secao === 'habitos'"
                     :form="form"
                 />
 
-
-                <!-- ===================================================== -->
                 <!-- SEÇÃO INVÁLIDA -->
-                <!-- ===================================================== -->
 
                 <div
                     v-else
@@ -467,12 +397,10 @@ function salvar() {
                     Seção de perfil inválida.
                 </div>
 
-
-                <!-- ===================================================== -->
                 <!-- BOTÕES -->
-                <!-- ===================================================== -->
 
                 <div
+                    v-if="rotasSalvar[secao]"
                     class="mt-8 flex items-center justify-between border-t border-gray-200 pt-6"
                 >
 
@@ -481,28 +409,27 @@ function salvar() {
                     <button
                         type="button"
                         @click="voltar"
-                        class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50"
+                        :disabled="form.processing"
+                        class="rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         Cancelar
                     </button>
-
 
                     <!-- SALVAR -->
 
                     <button
                         type="button"
                         @click="salvar"
-                        :disabled="
-                            form.processing ||
-                            !rotasAtualizacao[secao]
-                        "
-                        class="rounded-lg bg-indigo-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        :disabled="form.processing"
+                        class="rounded-lg bg-red-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        {{
-                            form.processing
-                                ? 'Salvando...'
-                                : 'Salvar alterações'
-                        }}
+                        <span v-if="form.processing">
+                            Salvando...
+                        </span>
+
+                        <span v-else>
+                            Salvar alterações
+                        </span>
                     </button>
 
                 </div>
@@ -510,7 +437,5 @@ function salvar() {
             </div>
 
         </div>
-
     </AuthenticatedLayout>
-
 </template>

@@ -45,7 +45,6 @@ function editar() {
             v-else
             class="space-y-4"
         >
-
             <div
                 v-for="medicamento in medicamentos"
                 :key="medicamento.id"
@@ -94,7 +93,6 @@ function editar() {
                 </div>
 
             </div>
-
         </div>
 
     </PerfilCard>

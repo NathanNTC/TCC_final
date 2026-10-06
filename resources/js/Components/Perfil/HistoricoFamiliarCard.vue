@@ -10,7 +10,7 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar.historico-familiar'))
+    router.visit('/perfil/editar/historico-familiar')
 }
 
 const nomes = {
@@ -43,13 +43,11 @@ const nomes = {
             </button>
         </template>
 
-
         <!-- CONDIÇÕES -->
         <div
             v-if="perfilSaude?.historico_familiar?.length"
             class="flex flex-wrap gap-2"
         >
-
             <span
                 v-for="item in perfilSaude.historico_familiar"
                 :key="item"
@@ -57,9 +55,7 @@ const nomes = {
             >
                 {{ nomes[item] || item }}
             </span>
-
         </div>
-
 
         <p
             v-else
@@ -68,13 +64,11 @@ const nomes = {
             Nenhum histórico familiar informado.
         </p>
 
-
         <!-- DETALHES -->
         <div
             v-if="perfilSaude?.historico_familiar_detalhes"
             class="mt-5"
         >
-
             <p class="text-sm text-gray-500">
                 Detalhes
             </p>
@@ -82,7 +76,6 @@ const nomes = {
             <p class="mt-1 whitespace-pre-line text-gray-900">
                 {{ perfilSaude.historico_familiar_detalhes }}
             </p>
-
         </div>
 
     </PerfilCard>

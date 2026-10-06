@@ -10,7 +10,7 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar.problemas-saude'))
+    router.visit('/perfil/editar/problemas-saude')
 }
 
 const nomes = {
@@ -48,13 +48,11 @@ const nomes = {
             </button>
         </template>
 
-
         <!-- CONDIÇÕES -->
         <div
             v-if="perfilSaude?.problemas_saude_previos?.length"
             class="flex flex-wrap gap-2"
         >
-
             <span
                 v-for="item in perfilSaude.problemas_saude_previos"
                 :key="item"
@@ -62,9 +60,7 @@ const nomes = {
             >
                 {{ nomes[item] || item }}
             </span>
-
         </div>
-
 
         <!-- NENHUMA CONDIÇÃO -->
         <p
@@ -74,13 +70,11 @@ const nomes = {
             Nenhuma condição informada.
         </p>
 
-
         <!-- DETALHES -->
         <div
             v-if="perfilSaude?.problemas_saude_detalhes"
             class="mt-5"
         >
-
             <p class="text-sm text-gray-500">
                 Detalhes
             </p>
@@ -88,7 +82,6 @@ const nomes = {
             <p class="mt-1 whitespace-pre-line text-gray-900">
                 {{ perfilSaude.problemas_saude_detalhes }}
             </p>
-
         </div>
 
     </PerfilCard>

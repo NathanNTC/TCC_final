@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Perfil;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateDeficienciasRequest;
+use App\Http\Requests\Perfil\UpdateDeficienciasRequest;
 use App\Services\Paciente\PerfilSaudeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;

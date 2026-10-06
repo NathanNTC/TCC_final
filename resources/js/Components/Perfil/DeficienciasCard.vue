@@ -2,7 +2,7 @@
 import { router } from '@inertiajs/vue3'
 import PerfilCard from './PerfilCard.vue'
 
-const props = defineProps({
+defineProps({
     perfilSaude: {
         type: Object,
         default: null,
@@ -10,7 +10,7 @@ const props = defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar.deficiencias'))
+    router.visit('/perfil/editar/deficiencias')
 }
 
 const nomes = {

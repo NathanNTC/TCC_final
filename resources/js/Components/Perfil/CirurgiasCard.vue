@@ -10,7 +10,7 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar.cirurgias'))
+    router.visit('/perfil/editar/cirurgias')
 }
 
 const anestesias = {
@@ -35,7 +35,6 @@ const implantes = {
     nenhum: 'Não possui implantes',
 }
 </script>
-
 
 <template>
 

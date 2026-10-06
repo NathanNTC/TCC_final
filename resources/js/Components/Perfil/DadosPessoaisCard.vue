@@ -15,7 +15,7 @@ defineProps({
 })
 
 function editar() {
-    router.visit(route('perfil.editar.dados-pessoais'))
+    router.visit('/perfil/editar/dados-pessoais')
 }
 </script>
 
@@ -119,16 +119,7 @@ function editar() {
                 </p>
             </div>
 
-            <!-- TIPO SANGUÍNEO -->
-            <div>
-                <p class="text-sm text-gray-500">
-                    Tipo sanguíneo
-                </p>
-
-                <p class="mt-1 font-medium text-gray-900">
-                    {{ perfilSaude?.tipo_sanguineo || 'Não informado' }}
-                </p>
-            </div>
+            
 
         </div>
     </PerfilCard>

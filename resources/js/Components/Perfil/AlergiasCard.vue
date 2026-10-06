@@ -9,7 +9,6 @@ defineProps({
     },
 })
 
-
 /*
 |--------------------------------------------------------------------------
 | Editar
@@ -17,13 +16,8 @@ defineProps({
 */
 
 function editar() {
-    router.visit(
-        route('perfil.editar', {
-            secao: 'alergias',
-        })
-    )
+    router.visit('/perfil/editar/alergias')
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -38,7 +32,6 @@ const nomesAlergia = {
     nao_possui: 'Não possui',
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | Nomes das reações
@@ -52,7 +45,6 @@ const nomesReacao = {
     tontura_desmaio: 'Tontura forte ou desmaio',
 }
 </script>
-
 
 <template>
 

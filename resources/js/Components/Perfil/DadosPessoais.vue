@@ -436,38 +436,7 @@ onMounted(() => {
             </div>
 
 
-            <!-- TIPO SANGUÍNEO -->
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700">
-                    Tipo sanguíneo
-                </label>
-
-                <select
-                    v-model="form.tipo_sanguineo"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                >
-                    <option value="">
-                        Não informado
-                    </option>
-
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                </select>
-
-                <p
-                    v-if="form.errors.tipo_sanguineo"
-                    class="mt-1 text-sm text-red-600"
-                >
-                    {{ form.errors.tipo_sanguineo }}
-                </p>
-            </div>
+            
 
         </div>
 

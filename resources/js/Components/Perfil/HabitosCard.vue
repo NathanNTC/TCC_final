@@ -10,7 +10,7 @@ defineProps({
 })
 
 function editar() {
-    router.visite('/perfil/editar/habitos')
+    router.visit('/perfil/editar/habitos')
 }
 </script>
 
@@ -29,7 +29,6 @@ function editar() {
                 Editar
             </button>
         </template>
-
 
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 
@@ -50,7 +49,6 @@ function editar() {
                 </p>
             </div>
 
-
             <!-- ÁLCOOL -->
             <div>
                 <p class="text-sm text-gray-500">
@@ -67,7 +65,6 @@ function editar() {
                     }}
                 </p>
             </div>
-
 
             <!-- DROGAS -->
             <div>
@@ -86,7 +83,6 @@ function editar() {
                 </p>
             </div>
 
-
             <!-- ATIVIDADE FÍSICA -->
             <div>
                 <p class="text-sm text-gray-500">
@@ -104,7 +100,6 @@ function editar() {
                 </p>
             </div>
 
-
             <!-- ALTURA -->
             <div>
                 <p class="text-sm text-gray-500">
@@ -121,7 +116,6 @@ function editar() {
                     }}
                 </p>
             </div>
-
 
             <!-- PESO -->
             <div>
