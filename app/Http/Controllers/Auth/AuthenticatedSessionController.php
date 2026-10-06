@@ -7,41 +7,54 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Exibe a tela de login usando Vue + Inertia.
      */
-    public function create(): View
+    public function create(): Response
     {
-        return view('auth.login');
+        return Inertia::render('Auth/Login', [
+            'canResetPassword' => true,
+            'status' => session('status'),
+        ]);
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Processa uma tentativa de autenticação.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        // Valida e autentica o usuário.
         $request->authenticate();
 
+        // Regenera a sessão por segurança.
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Redireciona para a página originalmente solicitada
+        // ou para o Dashboard.
+        return redirect()->intended(
+            route('dashboard', absolute: false)
+        );
     }
 
     /**
-     * Destroy an authenticated session.
+     * Encerra a sessão do usuário.
      */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
+        // Invalida a sessão atual.
         $request->session()->invalidate();
 
+        // Gera um novo token CSRF.
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Volta para o login.
+        return redirect()->route('login');
     }
 }

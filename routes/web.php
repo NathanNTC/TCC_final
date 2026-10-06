@@ -12,14 +12,16 @@ use App\Http\Controllers\Perfil\ProblemasSaudeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [
+    DashboardController::class,
+    'index'
+])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
 
@@ -37,7 +39,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/perfil', [PerfilController::class, 'store'])
         ->name('perfil.store');
 
-
+    Route::patch('/perfil/tipo-sanguineo', [
+    PerfilController::class,
+    'atualizarTipoSanguineo'
+    ])->name('perfil.atualizar.tipo-sanguineo');
     /*
     |--------------------------------------------------------------------------
     | Edição das seções

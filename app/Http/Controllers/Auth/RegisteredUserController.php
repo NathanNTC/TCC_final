@@ -9,16 +9,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Exibe a tela de cadastro.
+     * Exibe a tela de cadastro usando Vue + Inertia.
      */
-    public function create(): View
+    public function create(): Response
     {
-        return view('auth.register');
+        return Inertia::render('Auth/Register');
     }
 
     /**
@@ -32,15 +33,21 @@ class RegisteredUserController extends Controller
     ): RedirectResponse {
 
         $dadosValidados = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
             'email' => [
                 'required',
                 'string',
                 'lowercase',
                 'email',
                 'max:255',
-                'unique:users,email'
+                'unique:users,email',
             ],
+
             'password' => [
                 'required',
                 'confirmed',
@@ -48,10 +55,31 @@ class RegisteredUserController extends Controller
             ],
         ]);
 
+        /*
+         * O PacienteService continua responsável por:
+         *
+         * - criar o usuário;
+         * - criar o paciente;
+         * - definir os dados iniciais;
+         * - manter a regra de cadastro centralizada.
+         */
         $user = $pacienteService->cadastrar($dadosValidados);
 
+        /*
+         * Faz login automaticamente após o cadastro.
+         */
         Auth::login($user);
 
+        /*
+         * Regenera a sessão por segurança.
+         */
+        $request->session()->regenerate();
+
+        /*
+         * Após criar a conta, o paciente é direcionado
+         * para o perfil de saúde.
+         */
         return redirect()->route('perfil.index');
     }
 }
+

@@ -8,7 +8,8 @@ defineProps({
 
 function adicionarCirurgia(form) {
     form.cirurgias.push({
-        procedimento: '',
+        id: null,
+        tipo: '',
         ano: '',
         anestesia: '',
         complicacoes: [],
@@ -20,11 +21,25 @@ function adicionarCirurgia(form) {
 function removerCirurgia(form, index) {
     form.cirurgias.splice(index, 1)
 }
+
+function selecionarNenhumaComplicacao(cirurgia, event) {
+    if (event.target.checked) {
+        cirurgia.complicacoes = ['nenhuma']
+    } else {
+        cirurgia.complicacoes = []
+    }
+}
+
+function selecionarNenhumImplante(cirurgia, event) {
+    if (event.target.checked) {
+        cirurgia.implantes = ['nenhum']
+    } else {
+        cirurgia.implantes = []
+    }
+}
 </script>
 
-
 <template>
-
     <div>
 
         <!-- ============================================================= -->
@@ -44,7 +59,6 @@ function removerCirurgia(form, index) {
 
         </div>
 
-
         <!-- ============================================================= -->
         <!-- NENHUMA CIRURGIA -->
         <!-- ============================================================= -->
@@ -53,7 +67,6 @@ function removerCirurgia(form, index) {
             v-if="form.cirurgias.length === 0"
             class="mb-6 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center"
         >
-
             <p class="text-sm text-gray-600">
                 Nenhuma cirurgia informada.
             </p>
@@ -62,9 +75,7 @@ function removerCirurgia(form, index) {
                 Se já realizou alguma cirurgia, clique em
                 "Adicionar cirurgia".
             </p>
-
         </div>
-
 
         <!-- ============================================================= -->
         <!-- CIRURGIAS -->
@@ -72,7 +83,7 @@ function removerCirurgia(form, index) {
 
         <div
             v-for="(cirurgia, index) in form.cirurgias"
-            :key="index"
+            :key="cirurgia.id ?? index"
             class="mb-6 rounded-xl border border-gray-200 p-5"
         >
 
@@ -94,51 +105,59 @@ function removerCirurgia(form, index) {
 
             </div>
 
-
             <!-- ========================================================= -->
-            <!-- PROCEDIMENTO / ANO -->
+            <!-- TIPO / ANO -->
             <!-- ========================================================= -->
 
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 
-                <!-- Procedimento -->
+                <!-- Tipo -->
 
                 <div>
 
                     <label class="block text-sm font-medium text-gray-700">
                         Nome ou tipo da cirurgia
+                        <span class="text-red-500">*</span>
                     </label>
 
                     <input
-                        v-model="cirurgia.procedimento"
+                        v-model="cirurgia.tipo"
                         type="text"
-                        placeholder="Ex.: Retirada da vesícula, cesárea, apêndice..."
+                        placeholder="Ex.: Retirada da vesícula, cesárea, apendicectomia..."
                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
 
-                </div>
+                    <p class="mt-1 text-xs text-gray-500">
+                        Informe o nome ou tipo do procedimento realizado.
+                    </p>
 
+                </div>
 
                 <!-- Ano -->
 
                 <div>
 
                     <label class="block text-sm font-medium text-gray-700">
-                        Ano aproximado
+                        Ano da cirurgia
+                        <span class="text-red-500">*</span>
                     </label>
 
                     <input
                         v-model="cirurgia.ano"
-                        type="text"
-                        maxlength="4"
+                        type="number"
+                        min="1900"
+                        :max="new Date().getFullYear()"
                         placeholder="Ex.: 2022"
                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                     >
 
+                    <p class="mt-1 text-xs text-gray-500">
+                        Informe o ano em que a cirurgia foi realizada.
+                    </p>
+
                 </div>
 
             </div>
-
 
             <!-- ========================================================= -->
             <!-- ANESTESIA -->
@@ -153,7 +172,6 @@ function removerCirurgia(form, index) {
                 <p class="mt-1 text-xs text-gray-500">
                     Se lembrar, informe o tipo utilizado.
                 </p>
-
 
                 <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
 
@@ -201,7 +219,6 @@ function removerCirurgia(form, index) {
 
             </div>
 
-
             <!-- ========================================================= -->
             <!-- COMPLICAÇÕES -->
             <!-- ========================================================= -->
@@ -215,7 +232,6 @@ function removerCirurgia(form, index) {
                 <p class="mt-1 text-xs text-gray-500">
                     Marque todas as opções que já aconteceram.
                 </p>
-
 
                 <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
 
@@ -239,6 +255,7 @@ function removerCirurgia(form, index) {
                             v-model="cirurgia.complicacoes"
                             type="checkbox"
                             :value="item[0]"
+                            :disabled="cirurgia.complicacoes.includes('nenhuma')"
                             class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         >
 
@@ -249,7 +266,6 @@ function removerCirurgia(form, index) {
                     </label>
 
                 </div>
-
 
                 <!-- NENHUMA COMPLICAÇÃO -->
 
@@ -266,11 +282,7 @@ function removerCirurgia(form, index) {
                         type="checkbox"
                         :checked="cirurgia.complicacoes.includes('nenhuma')"
                         class="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                        @change="
-                            $event.target.checked
-                                ? (cirurgia.complicacoes = ['nenhuma'])
-                                : (cirurgia.complicacoes = [])
-                        "
+                        @change="selecionarNenhumaComplicacao(cirurgia, $event)"
                     >
 
                     <span class="text-sm font-medium text-gray-700">
@@ -280,7 +292,6 @@ function removerCirurgia(form, index) {
                 </label>
 
             </div>
-
 
             <!-- ========================================================= -->
             <!-- IMPLANTES -->
@@ -295,7 +306,6 @@ function removerCirurgia(form, index) {
                 <p class="mt-1 text-xs text-gray-500">
                     Marque todas as opções que se aplicam.
                 </p>
-
 
                 <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
 
@@ -318,6 +328,7 @@ function removerCirurgia(form, index) {
                             v-model="cirurgia.implantes"
                             type="checkbox"
                             :value="item[0]"
+                            :disabled="cirurgia.implantes.includes('nenhum')"
                             class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         >
 
@@ -328,7 +339,6 @@ function removerCirurgia(form, index) {
                     </label>
 
                 </div>
-
 
                 <!-- NÃO POSSUI -->
 
@@ -345,11 +355,7 @@ function removerCirurgia(form, index) {
                         type="checkbox"
                         :checked="cirurgia.implantes.includes('nenhum')"
                         class="rounded border-gray-300 text-green-600 focus:ring-green-500"
-                        @change="
-                            $event.target.checked
-                                ? (cirurgia.implantes = ['nenhum'])
-                                : (cirurgia.implantes = [])
-                        "
+                        @change="selecionarNenhumImplante(cirurgia, $event)"
                     >
 
                     <span class="text-sm font-medium text-gray-700">
@@ -359,7 +365,6 @@ function removerCirurgia(form, index) {
                 </label>
 
             </div>
-
 
             <!-- ========================================================= -->
             <!-- OBSERVAÇÕES -->
@@ -388,7 +393,6 @@ function removerCirurgia(form, index) {
 
         </div>
 
-
         <!-- ============================================================= -->
         <!-- ADICIONAR CIRURGIA -->
         <!-- ============================================================= -->
@@ -402,5 +406,4 @@ function removerCirurgia(form, index) {
         </button>
 
     </div>
-
 </template>

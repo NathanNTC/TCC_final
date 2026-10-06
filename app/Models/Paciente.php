@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Cirurgia;
+use App\Models\Medicamento;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,6 +36,11 @@ class Paciente extends Model
     public function medicamentos(): HasMany
     {
         return $this->hasMany(Medicamento::class);
+    }
+
+    public function cirurgias(): HasMany
+    {
+        return $this->hasMany(Cirurgia::class);
     }
 
     public function triagens()

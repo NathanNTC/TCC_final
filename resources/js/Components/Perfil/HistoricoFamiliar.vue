@@ -14,7 +14,7 @@ const opcoes = [
     ['cancer_mama', 'Câncer de mama'],
     ['cancer_colon', 'Câncer de cólon'],
     ['cancer_prostata', 'Câncer de próstata'],
-    ['doencas_geneticas', 'Doenças genéticas ou raras'],
+    ['doenca_genetica', 'Doenças genéticas ou raras'],
     ['outros', 'Outros'],
 ]
 </script>

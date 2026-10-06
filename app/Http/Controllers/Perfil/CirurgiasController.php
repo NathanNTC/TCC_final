@@ -20,6 +20,7 @@ class CirurgiasController extends Controller
             'secao' => 'cirurgias',
             'paciente' => $paciente,
             'perfilSaude' => $paciente->perfilSaude,
+            'cirurgias' => $paciente->cirurgias,
         ]);
     }
 

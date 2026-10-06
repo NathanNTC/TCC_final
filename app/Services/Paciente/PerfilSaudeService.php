@@ -31,6 +31,11 @@ class PerfilSaudeService
                 $paciente,
                 $dados
             );
+
+            $this->atualizarCirurgias(
+                $paciente,
+                $dados
+            );
         });
     }
 
@@ -42,12 +47,12 @@ class PerfilSaudeService
         array $dados
     ): void {
         $paciente->update([
-            'cpf' => $dados['cpf'],
-            'sexo' => $dados['sexo'],
-            'data_nascimento' => $dados['data_nascimento'],
-            'telefone' => $dados['telefone'],
-            'cidade' => $dados['cidade'],
-            'estado' => $dados['estado'],
+            'cpf' => $dados['cpf'] ?? null,
+            'sexo' => $dados['sexo'] ?? null,
+            'data_nascimento' => $dados['data_nascimento'] ?? null,
+            'telefone' => $dados['telefone'] ?? null,
+            'cidade' => $dados['cidade'] ?? null,
+            'estado' => $dados['estado'] ?? null,
             'profissao' => $dados['profissao'] ?? null,
         ]);
     }
@@ -126,49 +131,135 @@ class PerfilSaudeService
         Paciente $paciente,
         array $dados
     ): void {
-        DB::transaction(function () use ($paciente, $dados) {
+        $paciente->medicamentos()->delete();
 
-            $paciente->medicamentos()->delete();
+        $medicamentos = $dados['medicamentos'] ?? [];
 
-            $medicamentos = $dados['medicamentos'] ?? [];
+        foreach ($medicamentos as $medicamento) {
 
-            foreach ($medicamentos as $medicamento) {
-
-                if (
-                    !isset($medicamento['nome']) ||
-                    trim($medicamento['nome']) === ''
-                ) {
-                    continue;
-                }
-
-                $paciente->medicamentos()->create([
-                    'nome' =>
-                        trim($medicamento['nome']),
-
-                    'dosagem' =>
-                        $medicamento['dosagem'] ?? null,
-
-                    'frequencia' =>
-                        $medicamento['frequencia'] ?? null,
-
-                    'indicacao' =>
-                        $medicamento['indicacao'] ?? null,
-                ]);
+            if (
+                !isset($medicamento['nome']) ||
+                trim($medicamento['nome']) === ''
+            ) {
+                continue;
             }
-        });
+
+            $paciente->medicamentos()->create([
+                'nome' =>
+                    trim($medicamento['nome']),
+
+                'dosagem' =>
+                    $medicamento['dosagem'] ?? null,
+
+                'frequencia' =>
+                    $medicamento['frequencia'] ?? null,
+
+                'indicacao' =>
+                    $medicamento['indicacao'] ?? null,
+            ]);
+        }
     }
 
     /**
-     * Atualiza cirurgias.
+     * Atualiza cirurgias do paciente.
+     *
+     * As cirurgias ficam armazenadas na tabela
+     * de cirurgias relacionada ao paciente.
      */
     public function atualizarCirurgias(
         Paciente $paciente,
         array $dados
     ): void {
-        $this->perfil($paciente)->update([
-            'cirurgias_previas' =>
-                $dados['cirurgias_previas'] ?? null,
-        ]);
+        $cirurgias = $dados['cirurgias'] ?? [];
+
+        /*
+         * IDs das cirurgias que continuam existindo.
+         *
+         * Somente IDs pertencentes ao paciente
+         * serão considerados posteriormente.
+         */
+        $idsMantidos = collect($cirurgias)
+            ->pluck('id')
+            ->filter(fn ($id) => !empty($id))
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->toArray();
+
+        /*
+         * Remove cirurgias antigas que não estão
+         * mais presentes no formulário.
+         */
+        $query = $paciente->cirurgias();
+
+        if (!empty($idsMantidos)) {
+            $query->whereNotIn('id', $idsMantidos);
+        }
+
+        $query->delete();
+
+        /*
+         * Cria novas cirurgias ou atualiza
+         * as existentes.
+         */
+        foreach ($cirurgias as $cirurgia) {
+
+            /*
+             * Ignora registros vazios.
+             */
+            if (
+                !isset($cirurgia['tipo']) ||
+                trim((string) $cirurgia['tipo']) === ''
+            ) {
+                continue;
+            }
+
+            /*
+             * Dados que serão salvos.
+             */
+            $dadosCirurgia = [
+                'tipo' =>
+                    trim((string) $cirurgia['tipo']),
+
+                'ano' =>
+                    !empty($cirurgia['ano'])
+                        ? (int) $cirurgia['ano']
+                        : null,
+
+                'anestesia' =>
+                    $cirurgia['anestesia'] ?? null,
+
+                'complicacoes' =>
+                    $cirurgia['complicacoes'] ?? [],
+
+                'implantes' =>
+                    $cirurgia['implantes'] ?? [],
+
+                'observacoes' =>
+                    $cirurgia['observacoes'] ?? null,
+            ];
+
+            /*
+             * Se possui ID, atualiza.
+             *
+             * Através da relação do paciente, garantimos
+             * que o registro pertence a ele.
+             */
+            if (!empty($cirurgia['id'])) {
+
+                $paciente->cirurgias()
+                    ->where('id', (int) $cirurgia['id'])
+                    ->update($dadosCirurgia);
+
+                continue;
+            }
+
+            /*
+             * Se não possui ID, cria uma nova cirurgia.
+             */
+            $paciente->cirurgias()->create(
+                $dadosCirurgia
+            );
+        }
     }
 
     /**
@@ -196,6 +287,21 @@ class PerfilSaudeService
 
             'peso' =>
                 $dados['peso'] ?? null,
+        ]);
+    }
+
+    /**
+     * Atualiza apenas o tipo sanguíneo.
+     *
+     * Usado quando o paciente altera o tipo sanguíneo
+     * diretamente no perfil.
+     */
+    public function atualizarTipoSanguineo(
+        Paciente $paciente,
+        ?string $tipoSanguineo
+    ): void {
+        $this->perfil($paciente)->update([
+            'tipo_sanguineo' => $tipoSanguineo,
         ]);
     }
 
@@ -251,9 +357,6 @@ class PerfilSaudeService
 
                 'uso_drogas' =>
                     $dados['uso_drogas'] ?? false,
-
-                'cirurgias_previas' =>
-                    $dados['cirurgias_previas'] ?? null,
 
                 'atividade_fisica_regular' =>
                     $dados['atividade_fisica_regular'] ?? false,

@@ -21,7 +21,6 @@ defineProps({
             </p>
         </div>
 
-
         <!-- CONDIÇÕES -->
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 
@@ -45,9 +44,12 @@ defineProps({
                 ]"
                 :key="item[0]"
                 class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-4 transition hover:bg-gray-50"
-                :class="form.problemas_saude_previos.includes(item[0])
-                    ? 'border-indigo-500 bg-indigo-50'
-                    : ''"
+                :class="
+                    Array.isArray(form.problemas_saude_previos) &&
+                    form.problemas_saude_previos.includes(item[0])
+                        ? 'border-indigo-500 bg-indigo-50'
+                        : ''
+                "
             >
 
                 <input
@@ -64,7 +66,6 @@ defineProps({
             </label>
 
         </div>
-
 
         <!-- DETALHES -->
         <div class="mt-6">
@@ -94,3 +95,4 @@ defineProps({
 
     </div>
 </template>
+

@@ -19,6 +19,11 @@ class UpdateCirurgiasRequest extends FormRequest
                 'array',
             ],
 
+            'cirurgias.*.id' => [
+                'nullable',
+                'integer',
+            ],
+
             'cirurgias.*.tipo' => [
                 'required',
                 'string',
@@ -45,7 +50,7 @@ class UpdateCirurgiasRequest extends FormRequest
 
             'cirurgias.*.complicacoes.*' => [
                 'string',
-                'in:uti,infeccao,sangramento,demora_acordar,nenhuma',
+                'in:uti,infeccao,sangramento_transfusao,demora_acordar,nenhuma',
             ],
 
             'cirurgias.*.implantes' => [
@@ -55,7 +60,13 @@ class UpdateCirurgiasRequest extends FormRequest
 
             'cirurgias.*.implantes.*' => [
                 'string',
-                'in:metal,protese,marcapasso,nenhum',
+                'in:placas_parafusos_pinos,protese,marcapasso,nenhum',
+            ],
+
+            'cirurgias.*.observacoes' => [
+                'nullable',
+                'string',
+                'max:2000',
             ],
         ];
     }
