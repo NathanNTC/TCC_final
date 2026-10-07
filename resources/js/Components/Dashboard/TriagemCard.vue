@@ -61,36 +61,75 @@ import { Link } from '@inertiajs/vue3'
 
             </div>
 
-            <Link
-                href="/triagem"
-                class="inline-flex shrink-0 items-center
-                       justify-center gap-2 rounded-xl
-                       bg-blue-600 px-6 py-3 text-sm
-                       font-semibold text-white shadow-sm
-                       transition-all duration-200
-                       hover:bg-blue-700 hover:shadow-md
-                       focus:outline-none focus:ring-2
-                       focus:ring-blue-500 focus:ring-offset-2"
-            >
-                Iniciar triagem
+            <div class="flex shrink-0 flex-col gap-3 sm:flex-row">
 
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="h-4 w-4"
+                <!-- NOVA TRIAGEM -->
+                <Link
+                    href="/triagens/nova"
+                    class="inline-flex items-center
+                           justify-center gap-2 rounded-xl
+                           bg-blue-600 px-6 py-3 text-sm
+                           font-semibold text-white shadow-sm
+                           transition-all duration-200
+                           hover:bg-blue-700 hover:shadow-md
+                           focus:outline-none focus:ring-2
+                           focus:ring-blue-500 focus:ring-offset-2"
                 >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-                    />
-                </svg>
-            </Link>
+                    Iniciar triagem
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="h-4 w-4"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                        />
+                    </svg>
+                </Link>
+
+                <!-- MINHAS TRIAGENS -->
+                <Link
+                    href="/triagens"
+                    class="inline-flex items-center
+                           justify-center gap-2 rounded-xl
+                           border border-blue-200 bg-white
+                           px-6 py-3 text-sm font-semibold
+                           text-blue-700 shadow-sm
+                           transition-all duration-200
+                           hover:border-blue-300
+                           hover:bg-blue-50
+                           hover:shadow-md
+                           focus:outline-none focus:ring-2
+                           focus:ring-blue-500 focus:ring-offset-2"
+                >
+                    Minhas triagens
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                        class="h-4 w-4"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2Z"
+                        />
+                    </svg>
+                </Link>
+
+            </div>
 
         </div>
 
     </section>
 </template>
+

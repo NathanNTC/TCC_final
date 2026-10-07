@@ -13,6 +13,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TriagemController;
+use App\Http\Controllers\TriagemMensagemController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -157,6 +159,43 @@ Route::middleware(['auth'])->group(function () {
         ProfileController::class,
         'destroy'
     ])->name('profile.destroy');
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | Triagens
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/triagens', [
+        TriagemController::class,
+        'index'
+    ])->name('triagens.index');
+
+    Route::get('/triagens/nova', [
+        TriagemController::class,
+        'create'
+    ])->name('triagens.create');
+
+    Route::post('/triagens', [
+        TriagemController::class,
+        'store'
+    ])->name('triagens.store');
+
+    Route::get('/triagens/{triagem}', [
+        TriagemController::class,
+        'show'
+    ])->name('triagens.show');
+
+    Route::post('/triagens/{triagem}/mensagens', [
+    \App\Http\Controllers\TriagemController::class,
+    'enviarMensagem'
+    ])->name('triagens.mensagens.store');
+
+    Route::post('/triagens/{triagem}/mensagens', [
+    TriagemMensagemController::class,
+    'store',
+    ])->name('triagens.mensagens.store');
 });
 
 require __DIR__.'/auth.php';

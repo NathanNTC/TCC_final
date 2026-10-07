@@ -43,7 +43,7 @@ class Paciente extends Model
         return $this->hasMany(Cirurgia::class);
     }
 
-    public function triagens()
+    public function triagens(): HasMany
     {
         return $this->hasMany(Triagem::class);
     }
