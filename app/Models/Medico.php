@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Medico extends Model
 {
@@ -11,10 +13,13 @@ class Medico extends Model
     protected $fillable = [
         'user_id',
         'crm',
-        'instituicao'
+        'instituicao',
     ];
 
-    public function user()
+    /**
+     * Médico pertence a um usuário.
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

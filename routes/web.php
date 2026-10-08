@@ -188,13 +188,8 @@ Route::middleware(['auth'])->group(function () {
     ])->name('triagens.show');
 
     Route::post('/triagens/{triagem}/mensagens', [
-    \App\Http\Controllers\TriagemController::class,
-    'enviarMensagem'
-    ])->name('triagens.mensagens.store');
-
-    Route::post('/triagens/{triagem}/mensagens', [
-    TriagemMensagemController::class,
-    'store',
+        TriagemMensagemController::class,
+        'store',
     ])->name('triagens.mensagens.store');
 });
 
