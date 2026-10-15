@@ -54,11 +54,14 @@ defineProps({
                         </div>
 
                         <div>
-                            <h2
-                                class="text-lg font-semibold text-slate-900"
-                            >
-                                Perfil de saúde
-                            </h2>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h2 class="text-lg font-semibold text-slate-900">
+                                    Perfil de saúde
+                                </h2>
+                                <span class="text-xs font-semibold text-slate-950 bg-amber-400 border border-black rounded px-2 py-0.5 shadow-sm">
+                                    (utilizaremos esses dados apenas para optimização da coleta e triagem conversacional)
+                                </span>
+                            </div>
 
                             <p class="text-sm text-slate-500">
                                 Suas informações pessoais e de saúde.

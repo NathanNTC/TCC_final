@@ -10,8 +10,7 @@ return new class extends Migration
     {
         Schema::table('perfil_saude', function (Blueprint $table) {
             $table->text('alergias_detalhes')
-                ->nullable()
-                ->after('alergias');
+                ->nullable();
         });
     }
 

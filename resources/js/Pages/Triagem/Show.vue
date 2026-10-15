@@ -82,13 +82,21 @@ function enviarMensagem() {
 
     router.post(
         `/triagens/${props.triagem.id}/mensagens`,
-        { mensagem: texto },
+        {
+            mensagem: texto,
+        },
         {
             preserveScroll: true,
+
             onSuccess: () => {
                 mensagem.value = ''
                 scrollToBottom()
             },
+
+            onError: (errors) => {
+                console.error('Erro ao enviar mensagem:', errors)
+            },
+
             onFinish: () => {
                 enviando.value = false
             },

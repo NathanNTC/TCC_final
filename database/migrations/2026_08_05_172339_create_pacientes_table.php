@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->string('cpf', 14)->unique()->nullable();
 
-            $table->enum('sexo', ['M', 'F'])->nullable();
+            $table->string('sexo', 1)->nullable();
 
             $table->date('data_nascimento')->nullable();
 

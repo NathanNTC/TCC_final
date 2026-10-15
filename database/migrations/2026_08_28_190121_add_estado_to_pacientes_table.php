@@ -10,8 +10,7 @@ return new class extends Migration
     {
         Schema::table('pacientes', function (Blueprint $table) {
             $table->char('estado', 2)
-                ->nullable()
-                ->after('cidade');
+                ->nullable();
         });
     }
 

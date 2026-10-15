@@ -16,9 +16,10 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TriagemController;
 use App\Http\Controllers\TriagemMensagemController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [
+    DashboardController::class,
+    'index'
+])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard', [
     DashboardController::class,

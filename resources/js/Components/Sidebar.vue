@@ -58,12 +58,12 @@ const menuPaciente = [
     },
     {
         nome: 'Nova triagem',
-        rota: '/triagem/nova',
+        rota: '/triagens/nova',
         icon: 'stethoscope',
     },
     {
         nome: 'Histórico',
-        rota: '/triagem/historico',
+        rota: '/triagens',
         icon: 'clipboard-list',
     },
 ]

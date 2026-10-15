@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -6,43 +7,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Executa a migration.
-     */
     public function up(): void
     {
         Schema::table('mensagem_triagems', function (Blueprint $table) {
             $table->foreignId('triagem_id')
-                ->after('id')
                 ->constrained('triagems')
                 ->cascadeOnDelete();
 
-            $table->string('remetente', 20)
-                ->after('triagem_id');
+            $table->string('remetente', 20);
+            $table->text('mensagem');
 
-            $table->longText('mensagem')
-                ->after('remetente');
+            $table->integer('ordem')->default(0);
 
-            $table->unsignedInteger('ordem')
-                ->default(0)
-                ->after('mensagem');
-
-            $table->timestamp('enviada_em')
-                ->nullable()
-                ->after('ordem');
+            $table->timestamp('enviada_em')->nullable();
 
             $table->index(['triagem_id', 'ordem']);
         });
     }
 
-    /**
-     * Reverte a migration.
-     */
     public function down(): void
     {
         Schema::table('mensagem_triagems', function (Blueprint $table) {
             $table->dropForeign(['triagem_id']);
-
             $table->dropIndex(['triagem_id', 'ordem']);
 
             $table->dropColumn([

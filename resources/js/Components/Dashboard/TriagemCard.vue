@@ -23,7 +23,7 @@ import { Link } from '@inertiajs/vue3'
 
                 <div class="flex items-center gap-3">
 
-                    <div
+                    <div 
                         class="flex h-11 w-11 items-center
                                justify-center rounded-xl
                                bg-blue-600 text-white shadow-sm"

@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -6,69 +7,38 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Executa a migration.
-     */
     public function up(): void
     {
         Schema::table('triagems', function (Blueprint $table) {
             $table->foreignId('paciente_id')
-                ->after('id')
                 ->constrained('pacientes')
                 ->cascadeOnDelete();
 
             $table->string('status', 30)
-                ->default('em_andamento')
-                ->after('paciente_id');
+                ->default('em_andamento');
 
-            $table->string('prioridade_ia', 30)
-                ->nullable()
-                ->after('status');
+            $table->string('prioridade_ia', 30)->nullable();
+            $table->text('resumo_ia')->nullable();
+            $table->text('orientacao_ia')->nullable();
 
-            $table->text('resumo_ia')
-                ->nullable()
-                ->after('prioridade_ia');
+            $table->json('possiveis_causas_ia')->nullable();
+            $table->json('resultado_completo_ia')->nullable();
 
-            $table->text('orientacao_ia')
-                ->nullable()
-                ->after('resumo_ia');
+            $table->string('modelo_ia')->nullable();
 
-            $table->json('possiveis_causas_ia')
-                ->nullable()
-                ->after('orientacao_ia');
+            $table->integer('tempo_processamento_ms')->nullable();
 
-            $table->json('resultado_completo_ia')
-                ->nullable()
-                ->after('possiveis_causas_ia');
-
-            $table->string('modelo_ia')
-                ->nullable()
-                ->after('resultado_completo_ia');
-
-            $table->unsignedInteger('tempo_processamento_ms')
-                ->nullable()
-                ->after('modelo_ia');
-
-            $table->timestamp('iniciada_em')
-                ->nullable()
-                ->after('tempo_processamento_ms');
-
-            $table->timestamp('finalizada_em')
-                ->nullable()
-                ->after('iniciada_em');
+            $table->timestamp('iniciada_em')->nullable();
+            $table->timestamp('finalizada_em')->nullable();
 
             $table->index(['paciente_id', 'status']);
         });
     }
 
-    /**
-     * Reverte a migration.
-     */
     public function down(): void
     {
         Schema::table('triagems', function (Blueprint $table) {
             $table->dropForeign(['paciente_id']);
-
             $table->dropIndex(['paciente_id', 'status']);
 
             $table->dropColumn([
