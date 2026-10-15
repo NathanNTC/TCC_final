@@ -10,8 +10,20 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\CadastroAvaliadorController;
 
 Route::middleware('guest')->group(function () {
+
+    Route::get('avaliador/cadastro', [
+        CadastroAvaliadorController::class,
+        'create',
+    ])->name('avaliador.cadastro');
+
+    Route::post('avaliador/cadastro', [
+        CadastroAvaliadorController::class,
+        'store',
+    ])->name('avaliador.cadastro.store');
+    
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 

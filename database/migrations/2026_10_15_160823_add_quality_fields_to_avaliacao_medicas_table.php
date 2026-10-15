@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('avaliacao_medicas', function (Blueprint $table) {
+            $table->unsignedTinyInteger('nota_qualidade')
+                ->nullable()
+                ->after('prioridade_avaliador');
+
+            $table->text('comentario_qualidade')
+                ->nullable()
+                ->after('nota_qualidade');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('avaliacao_medicas', function (Blueprint $table) {
+            $table->dropColumn([
+                'nota_qualidade',
+                'comentario_qualidade',
+            ]);
+        });
+    }
+};

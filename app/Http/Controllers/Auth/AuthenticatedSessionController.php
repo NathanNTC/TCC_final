@@ -34,11 +34,24 @@ class AuthenticatedSessionController extends Controller
         // Regenera a sessão por segurança.
         $request->session()->regenerate();
 
-        // Redireciona para a página originalmente solicitada
-        // ou para o Dashboard.
-        return redirect()->intended(
-            route('dashboard', absolute: false)
-        );
+        $usuario = $request->user();
+
+        // Administrador vai para o painel administrativo.
+        if ($usuario->hasRole('Administrador')) {
+            return redirect()->route('admin.index');
+        }
+
+        // Avaliadores vão para a página de avaliação.
+        if ($usuario->hasAnyRole([
+            'Estudante',
+            'Residente',
+            'Medico',
+        ])) {
+            return redirect()->route('avaliacao.index');
+        }
+
+        // Demais usuários, como pacientes, vão para o dashboard.
+        return redirect()->route('dashboard');
     }
 
     /**
