@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { router, usePage } from '@inertiajs/vue3'
 
 const props = defineProps({
@@ -10,7 +10,33 @@ const props = defineProps({
 })
 
 const aberta = ref(false)
+const isDark = ref(false)
 const page = usePage()
+
+// Inicializa e verifica preferência de Tema (Dark / Light)
+onMounted(() => {
+    if (
+        localStorage.theme === 'dark' ||
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
+        isDark.value = true
+        document.documentElement.classList.add('dark')
+    } else {
+        isDark.value = false
+        document.documentElement.classList.remove('dark')
+    }
+})
+
+function toggleDarkMode() {
+    isDark.value = !isDark.value
+    if (isDark.value) {
+        document.documentElement.classList.add('dark')
+        localStorage.theme = 'dark'
+    } else {
+        document.documentElement.classList.remove('dark')
+        localStorage.theme = 'light'
+    }
+}
 
 function abrir() {
     aberta.value = true
@@ -152,12 +178,12 @@ const menu = computed(() => {
 // Texto e cores amigáveis para o cargo
 const perfilInfo = computed(() => {
     if (tipoUsuario.value === 'admin' || tipoUsuario.value === 'administrador') {
-        return { label: 'Administrador', badgeClass: 'bg-amber-100 text-amber-800 ring-amber-600/20' }
+        return { label: 'Administrador', badgeClass: 'bg-amber-100 text-amber-800 ring-amber-600/20 dark:bg-amber-950/60 dark:text-amber-300 dark:ring-amber-500/30' }
     }
     if (tipoUsuario.value === 'medico' || tipoUsuario.value === 'médico') {
-        return { label: 'Corpo Médico', badgeClass: 'bg-emerald-100 text-emerald-800 ring-emerald-600/20' }
+        return { label: 'Corpo Médico', badgeClass: 'bg-emerald-100 text-emerald-800 ring-emerald-600/20 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-500/30' }
     }
-    return { label: 'Paciente', badgeClass: 'bg-slate-100 text-slate-700 ring-slate-500/10' }
+    return { label: 'Paciente', badgeClass: 'bg-slate-100 text-slate-700 ring-slate-500/10 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700' }
 })
 
 const inicialNome = computed(() => props.user?.name?.charAt(0)?.toUpperCase() || 'U')
@@ -177,7 +203,7 @@ function navegar(rota) {
         v-if="!aberta"
         type="button"
         @click="abrir"
-        class="fixed left-5 top-5 z-40 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-700 shadow-md ring-1 ring-slate-900/10 transition-all duration-200 hover:bg-emerald-50 hover:text-emerald-600 hover:shadow-lg active:scale-95"
+        class="fixed left-5 top-5 z-40 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-700 shadow-md ring-1 ring-slate-900/10 transition-all duration-200 hover:bg-emerald-50 hover:text-emerald-600 hover:shadow-lg active:scale-95 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-800 dark:hover:bg-slate-800 dark:hover:text-emerald-400"
         aria-label="Abrir menu de navegação"
     >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-6 w-6">
@@ -189,7 +215,7 @@ function navegar(rota) {
     <Transition name="fade">
         <div
             v-if="aberta"
-            class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+            class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm transition-opacity dark:bg-slate-950/60"
             @click="fechar"
         ></div>
     </Transition>
@@ -198,33 +224,51 @@ function navegar(rota) {
     <Transition name="sidebar">
         <aside
             v-if="aberta"
-            class="fixed left-0 top-0 z-50 flex h-screen w-80 flex-col bg-white shadow-2xl ring-1 ring-slate-900/10"
+            class="fixed left-0 top-0 z-50 flex h-screen w-80 flex-col bg-white shadow-2xl ring-1 ring-slate-900/10 dark:bg-slate-900 dark:ring-slate-800"
         >
             <!-- CABEÇALHO DA SIDEBAR -->
-            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5 dark:border-slate-800">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/30 dark:bg-emerald-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="h-6 w-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                         </svg>
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold tracking-tight text-slate-900">
+                        <h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
                             TR-IA
                         </h2>
-                        <p class="text-xs font-medium text-slate-400">
+                        <p class="text-xs font-medium text-slate-400 dark:text-slate-500">
                             Triagem Inteligente
                         </p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-1">
+                    <!-- BOTÃO MODO ESCURO (CABEÇALHO) -->
+                    <button
+                        type="button"
+                        @click="toggleDarkMode"
+                        :title="isDark ? 'Mudar para Modo Claro' : 'Mudar para Modo Escuro'"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-amber-300"
+                        aria-label="Alternar modo escuro"
+                    >
+                        <!-- Ícone Sol (quando escuro) -->
+                        <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21m8.966-8.966h-2.25m-13.5 0h-2.25m15.356-6.364l-1.591 1.591M6.75 17.25l-1.591 1.591M19.071 19.071l-1.591-1.591M6.75 6.75L5.159 5.159M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <!-- Ícone Lua (quando claro) -->
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                        </svg>
+                    </button>
+
                     <!-- BOTÃO VOLTAR PARA DASHBOARD -->
                     <button
                         type="button"
                         @click="navegar(dashboardRota)"
                         title="Voltar ao Dashboard"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-emerald-50 hover:text-emerald-600"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-emerald-50 hover:text-emerald-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-emerald-400"
                         aria-label="Voltar para o Dashboard"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
@@ -236,7 +280,7 @@ function navegar(rota) {
                     <button
                         type="button"
                         @click="fechar"
-                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                        class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                         aria-label="Fechar menu"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
@@ -247,13 +291,13 @@ function navegar(rota) {
             </div>
 
             <!-- PERFIL DO USUÁRIO -->
-            <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
+            <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4 dark:border-slate-800 dark:bg-slate-800/40">
                 <div class="flex items-center gap-3">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 font-bold text-emerald-800 ring-2 ring-emerald-600/20">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 font-bold text-emerald-800 ring-2 ring-emerald-600/20 dark:bg-emerald-950/80 dark:text-emerald-300 dark:ring-emerald-500/30">
                         {{ inicialNome }}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-semibold text-slate-900">
+                        <p class="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
                             {{ user?.name || 'Usuário' }}
                         </p>
                         <span :class="['mt-1 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset', perfilInfo.badgeClass]">
@@ -264,7 +308,7 @@ function navegar(rota) {
             </div>
 
             <!-- NAVEGAÇÃO -->
-            <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+            <nav class="flex-1 space-y-1 overflow-y-auto px-4 py-4">
                 <button
                     v-for="item in menu"
                     :key="item.rota"
@@ -273,18 +317,18 @@ function navegar(rota) {
                     :class="[
                         'group relative flex w-full items-center gap-3.5 rounded-xl px-3.5 py-3 text-left text-sm font-medium transition-all duration-150',
                         isAtivo(item.rota)
-                            ? 'bg-emerald-50 text-emerald-800 font-semibold shadow-xs'
-                            : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                            ? 'bg-emerald-50 text-emerald-800 font-semibold shadow-xs dark:bg-emerald-950/50 dark:text-emerald-300'
+                            : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-100'
                     ]"
                 >
                     <!-- Indicador visual da rota ativa -->
                     <span
                         v-if="isAtivo(item.rota)"
-                        class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-emerald-600"
+                        class="absolute left-0 top-2 bottom-2 w-1 rounded-r-full bg-emerald-600 dark:bg-emerald-400"
                     ></span>
 
                     <!-- Ícones Vetoriais SVG -->
-                    <span :class="['flex h-6 w-6 shrink-0 items-center justify-center transition-colors', isAtivo(item.rota) ? 'text-emerald-600' : 'text-slate-400 group-hover:text-slate-600']">
+                    <span :class="['flex h-6 w-6 shrink-0 items-center justify-center transition-colors', isAtivo(item.rota) ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300']">
                         <!-- Dashboard -->
                         <svg v-if="item.icon === 'home'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21.00v-6a2.25 2.25 0 0 1 2.25-2.25h3a2.25 2.25 0 0 1 2.25 2.25v6" /></svg>
 
@@ -317,14 +361,32 @@ function navegar(rota) {
                 </button>
             </nav>
 
-            <!-- RODAPÉ DA SIDEBAR (BOTÃO DE SAIR) -->
-            <div class="border-t border-slate-100 p-4">
+            <!-- RODAPÉ DA SIDEBAR (MUDAR TEMA & SAIR) -->
+            <div class="space-y-1 border-t border-slate-100 p-4 dark:border-slate-800">
+                <!-- ITEM DE ALTERNAR MODO ESCURO/CLARO -->
+                <button
+                    type="button"
+                    @click="toggleDarkMode"
+                    class="group flex w-full items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-slate-100"
+                >
+                    <span class="flex h-6 w-6 items-center justify-center text-slate-400 transition-colors group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-amber-300">
+                        <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m0 13.5V21m8.966-8.966h-2.25m-13.5 0h-2.25m15.356-6.364l-1.591 1.591M6.75 17.25l-1.591 1.591M19.071 19.071l-1.591-1.591M6.75 6.75L5.159 5.159M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                        </svg>
+                    </span>
+                    <span>{{ isDark ? 'Modo claro' : 'Modo escuro' }}</span>
+                </button>
+
+                <!-- BOTÃO DE SAIR -->
                 <button
                     type="button"
                     @click.prevent.stop="logout"
-                    class="group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50 hover:text-rose-700"
+                    class="group flex w-full items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/40 dark:hover:text-rose-300"
                 >
-                    <span class="flex h-6 w-6 items-center justify-center text-rose-500 transition-transform group-hover:-translate-x-0.5">
+                    <span class="flex h-6 w-6 items-center justify-center text-rose-500 transition-transform group-hover:-translate-x-0.5 dark:text-rose-400">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12" />
                         </svg>

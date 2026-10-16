@@ -27,8 +27,11 @@ defineProps({
         class="group relative overflow-hidden rounded-2xl
                border bg-white p-5 shadow-sm
                transition-all duration-200
-               hover:-translate-y-0.5 hover:shadow-md"
-        :class="completo ? 'border-green-200' : 'border-slate-200'"
+               hover:-translate-y-0.5 hover:shadow-md
+               dark:bg-slate-900"
+        :class="completo 
+            ? 'border-emerald-200/80 dark:border-emerald-900/50' 
+            : 'border-slate-200/80 dark:border-slate-800'"
     >
 
         <div class="flex items-start justify-between">
@@ -40,8 +43,8 @@ defineProps({
                        justify-center rounded-xl"
                 :class="
                     completo
-                        ? 'bg-green-50 text-green-600'
-                        : 'bg-slate-100 text-slate-500'
+                        ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400'
+                        : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                 "
             >
                 <svg
@@ -200,11 +203,11 @@ defineProps({
 
             <span
                 class="rounded-full px-2.5 py-1
-                       text-xs font-semibold"
+                       text-xs font-semibold ring-1 ring-inset"
                 :class="
                     completo
-                        ? 'bg-green-50 text-green-600'
-                        : 'bg-amber-50 text-amber-600'
+                        ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-500/30'
+                        : 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-950/60 dark:text-amber-300 dark:ring-amber-500/30'
                 "
             >
                 {{ completo ? 'Completo' : 'Pendente' }}
@@ -214,11 +217,11 @@ defineProps({
 
         <div class="mt-4">
 
-            <h3 class="font-semibold text-slate-900">
+            <h3 class="font-semibold text-slate-900 dark:text-slate-100">
                 {{ titulo }}
             </h3>
 
-            <p class="mt-1 text-xs leading-relaxed text-slate-500">
+            <p class="mt-1 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
                 {{ descricao }}
             </p>
 

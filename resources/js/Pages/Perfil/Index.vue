@@ -109,7 +109,7 @@ const cancelarEdicaoTipoSanguineo = () => {
 */
 
 const cardClasses =
-    'overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-900/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md'
+    'overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-900/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md dark:bg-slate-900 dark:ring-slate-800'
 </script>
 
 <template>
@@ -117,7 +117,7 @@ const cardClasses =
 
     <AuthenticatedLayout>
 
-        <div class="min-h-screen bg-slate-50/70 pb-16">
+        <div class="min-h-screen bg-slate-50/70 pb-16 transition-colors duration-200 dark:bg-slate-950">
 
             <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
 
@@ -130,7 +130,8 @@ const cardClasses =
                            bg-gradient-to-r from-emerald-600
                            via-emerald-700 to-teal-800
                            p-6 text-white shadow-lg
-                           shadow-emerald-900/10 sm:p-8"
+                           shadow-emerald-900/10 sm:p-8
+                           dark:from-emerald-700 dark:via-emerald-800 dark:to-teal-900 dark:shadow-emerald-950/40"
                 >
 
                     <!-- TEXTURA -->
@@ -256,7 +257,7 @@ const cardClasses =
                                     v-if="!editandoTipoSanguineo"
                                     type="button"
                                     @click="editandoTipoSanguineo = true"
-                                    class="group flex items-center gap-2
+                                    class="group flex cursor-pointer items-center gap-2
                                            text-base font-bold text-white
                                            transition-colors
                                            hover:text-emerald-100"
@@ -303,10 +304,11 @@ const cardClasses =
                                                text-sm font-bold
                                                text-slate-800 shadow-sm
                                                focus:ring-2
-                                               focus:ring-emerald-300"
+                                               focus:ring-emerald-300
+                                               dark:bg-slate-800 dark:text-slate-100"
                                     >
 
-                                        <option value="">
+                                        <option value="" class="dark:bg-slate-800 dark:text-slate-100">
                                             Não informado
                                         </option>
 
@@ -314,6 +316,7 @@ const cardClasses =
                                             v-for="tipo in tiposSanguineos"
                                             :key="tipo"
                                             :value="tipo"
+                                            class="dark:bg-slate-800 dark:text-slate-100"
                                         >
                                             {{ tipo }}
                                         </option>
@@ -326,7 +329,7 @@ const cardClasses =
                                     <button
                                         type="button"
                                         @click="salvarTipoSanguineo"
-                                        class="rounded-lg bg-white/15
+                                        class="cursor-pointer rounded-lg bg-white/15
                                                px-2.5 py-1 text-xs
                                                font-semibold text-white
                                                transition-colors
@@ -341,7 +344,7 @@ const cardClasses =
                                     <button
                                         type="button"
                                         @click="cancelarEdicaoTipoSanguineo"
-                                        class="text-xs font-medium
+                                        class="cursor-pointer text-xs font-medium
                                                text-white/70
                                                transition-colors
                                                hover:text-white"
@@ -467,50 +470,3 @@ const cardClasses =
 
     </AuthenticatedLayout>
 </template>
-```
-
-### Agora falta apenas o backend
-
-Esse Vue chama:
-
-```text
-PATCH /perfil/tipo-sanguineo
-```
-
-Então você precisa ter a rota correspondente. Se **essa rota ainda não existe**, o campo vai aparecer e permitir selecionar, mas ao clicar em **Salvar** o Laravel vai retornar `404`.
-
-No seu `routes/web.php`:
-
-```php
-use App\Http\Controllers\PerfilController;
-
-Route::patch(
-    '/perfil/tipo-sanguineo',
-    [PerfilController::class, 'atualizarTipoSanguineo']
-)->name('perfil.tipo-sanguineo');
-```
-
-E no `PerfilController`:
-
-```php
-public function atualizarTipoSanguineo(Request $request)
-{
-    $validated = $request->validate([
-        'tipo_sanguineo' => [
-            'nullable',
-            'in:A+,A-,B+,B-,AB+,AB-,O+,O-',
-        ],
-    ]);
-
-    $paciente = auth()->user()->paciente;
-
-    $paciente->perfilSaude()->updateOrCreate(
-        [],
-        [
-            'tipo_sanguineo' => $validated['tipo_sanguineo'] ?? null,
-        ]
-    );
-
-    return back();
-}
-```

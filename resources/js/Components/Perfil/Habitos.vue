@@ -12,11 +12,11 @@ defineProps({
 
         <!-- CABEÇALHO -->
         <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                 Hábitos e medidas
             </h2>
 
-            <p class="mt-1 text-sm text-gray-500">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Informe alguns hábitos e medidas importantes para sua avaliação.
             </p>
         </div>
@@ -24,7 +24,7 @@ defineProps({
 
         <!-- HÁBITOS -->
         <div>
-            <h3 class="mb-4 text-lg font-semibold text-gray-800">
+            <h3 class="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-200">
                 Hábitos
             </h3>
 
@@ -32,18 +32,18 @@ defineProps({
 
                 <!-- FUMANTE -->
                 <label
-                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50"
+                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50"
                     :class="form.fumante
-                        ? 'border-indigo-500 bg-indigo-50'
+                        ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-500/80 dark:bg-indigo-950/30'
                         : ''"
                 >
 
                     <div>
-                        <p class="font-medium text-gray-800">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">
                             É fumante?
                         </p>
 
-                        <p class="mt-1 text-sm text-gray-500">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             Inclui cigarro e outros produtos derivados do tabaco.
                         </p>
                     </div>
@@ -51,7 +51,7 @@ defineProps({
                     <input
                         v-model="form.fumante"
                         type="checkbox"
-                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:checked:bg-indigo-600"
                     >
 
                 </label>
@@ -59,18 +59,18 @@ defineProps({
 
                 <!-- ÁLCOOL -->
                 <label
-                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50"
+                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50"
                     :class="form.alcoolismo
-                        ? 'border-indigo-500 bg-indigo-50'
+                        ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-500/80 dark:bg-indigo-950/30'
                         : ''"
                 >
 
                     <div>
-                        <p class="font-medium text-gray-800">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">
                             Consome bebidas alcoólicas?
                         </p>
 
-                        <p class="mt-1 text-sm text-gray-500">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             Informe se possui consumo habitual de bebidas alcoólicas.
                         </p>
                     </div>
@@ -78,7 +78,7 @@ defineProps({
                     <input
                         v-model="form.alcoolismo"
                         type="checkbox"
-                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:checked:bg-indigo-600"
                     >
 
                 </label>
@@ -86,18 +86,18 @@ defineProps({
 
                 <!-- DROGAS -->
                 <label
-                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50"
+                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50"
                     :class="form.uso_drogas
-                        ? 'border-indigo-500 bg-indigo-50'
+                        ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-500/80 dark:bg-indigo-950/30'
                         : ''"
                 >
 
                     <div>
-                        <p class="font-medium text-gray-800">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">
                             Faz uso de drogas?
                         </p>
 
-                        <p class="mt-1 text-sm text-gray-500">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             Informe caso faça uso de substâncias psicoativas.
                         </p>
                     </div>
@@ -105,7 +105,7 @@ defineProps({
                     <input
                         v-model="form.uso_drogas"
                         type="checkbox"
-                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:checked:bg-indigo-600"
                     >
 
                 </label>
@@ -113,18 +113,18 @@ defineProps({
 
                 <!-- ATIVIDADE FÍSICA -->
                 <label
-                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50"
+                    class="flex cursor-pointer items-center justify-between rounded-xl border border-gray-200 p-5 transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50"
                     :class="form.atividade_fisica_regular
-                        ? 'border-indigo-500 bg-indigo-50'
+                        ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-500/80 dark:bg-indigo-950/30'
                         : ''"
                 >
 
                     <div>
-                        <p class="font-medium text-gray-800">
+                        <p class="font-medium text-gray-800 dark:text-gray-200">
                             Pratica atividade física regularmente?
                         </p>
 
-                        <p class="mt-1 text-sm text-gray-500">
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             Considere atividades físicas realizadas de forma habitual.
                         </p>
                     </div>
@@ -132,7 +132,7 @@ defineProps({
                     <input
                         v-model="form.atividade_fisica_regular"
                         type="checkbox"
-                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:checked:bg-indigo-600"
                     >
 
                 </label>
@@ -144,11 +144,11 @@ defineProps({
         <!-- MEDIDAS -->
         <div class="mt-8">
 
-            <h3 class="text-lg font-semibold text-gray-800">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
                 Medidas corporais
             </h3>
 
-            <p class="mt-1 text-sm text-gray-500">
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 Informe seus valores atuais, se souber.
             </p>
 
@@ -158,7 +158,7 @@ defineProps({
                 <!-- ALTURA -->
                 <div>
 
-                    <label class="block text-sm font-medium text-gray-700">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Altura (metros)
                     </label>
 
@@ -169,12 +169,12 @@ defineProps({
                         max="3"
                         step="0.01"
                         placeholder="Ex.: 1.75"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                     >
 
                     <p
                         v-if="form.errors.altura"
-                        class="mt-1 text-sm text-red-600"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400"
                     >
                         {{ form.errors.altura }}
                     </p>
@@ -185,7 +185,7 @@ defineProps({
                 <!-- PESO -->
                 <div>
 
-                    <label class="block text-sm font-medium text-gray-700">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Peso (kg)
                     </label>
 
@@ -196,12 +196,12 @@ defineProps({
                         max="500"
                         step="0.01"
                         placeholder="Ex.: 70"
-                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder-gray-500"
                     >
 
                     <p
                         v-if="form.errors.peso"
-                        class="mt-1 text-sm text-red-600"
+                        class="mt-1 text-sm text-red-600 dark:text-red-400"
                     >
                         {{ form.errors.peso }}
                     </p>
@@ -214,9 +214,9 @@ defineProps({
 
 
         <!-- AVISO -->
-        <div class="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-5">
+        <div class="mt-8 rounded-xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800/50">
 
-            <p class="text-sm leading-relaxed text-gray-600">
+            <p class="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
                 Essas informações serão utilizadas para complementar seu perfil
                 e auxiliar no processo de triagem.
             </p>

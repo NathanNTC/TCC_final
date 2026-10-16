@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\AvaliacaoMedica;
 use App\Models\Convite;
+use App\Models\LogIA;
 use App\Models\Triagem;
 use App\Models\User;
 use App\Services\Avaliacao\ConviteService;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -23,6 +27,9 @@ class AdminController extends Controller
             'Acesso restrito ao administrador.'
         );
 
+        /*
+         * FILTRO DE PERFIL.
+         */
         $dados = $request->validate([
             'perfil' => [
                 'nullable',
@@ -39,7 +46,7 @@ class AdminController extends Controller
         $perfilSelecionado = $dados['perfil'] ?? 'todos';
 
         /*
-         * Identifica os avaliadores do perfil selecionado.
+         * CONSULTA-BASE DAS AVALIAÇÕES.
          */
         $avaliadores = null;
 
@@ -48,9 +55,6 @@ class AdminController extends Controller
                 ->select('users.id');
         }
 
-        /*
-         * Consulta-base das avaliações.
-         */
         $avaliacoesBase = AvaliacaoMedica::query();
 
         if ($avaliadores !== null) {
@@ -61,13 +65,12 @@ class AdminController extends Controller
         }
 
         /*
-         * Total de avaliações registradas.
+         * TOTAL DE AVALIAÇÕES.
          */
         $totalAvaliacoes = (clone $avaliacoesBase)->count();
 
         /*
-         * Avaliações em que a prioridade do avaliador
-         * corresponde à prioridade registrada pela IA.
+         * AVALIAÇÕES CONCORDANTES COM A PRIORIDADE DA IA.
          */
         $concordantes = (clone $avaliacoesBase)
             ->join(
@@ -85,8 +88,7 @@ class AdminController extends Controller
             ->count('avaliacao_medicas.id');
 
         /*
-         * Avaliações comparáveis para o cálculo
-         * de concordância e discordância.
+         * COMPARAÇÕES VÁLIDAS ENTRE A PRIORIDADE HUMANA E A IA.
          */
         $avaliacoesComparaveis = (clone $avaliacoesBase)
             ->join(
@@ -109,8 +111,7 @@ class AdminController extends Controller
             ->count('avaliacao_medicas.id');
 
         /*
-         * Quantidade de triagens distintas avaliadas
-         * pelo perfil selecionado.
+         * QUANTIDADE DE TRIAGENS DISTINTAS AVALIADAS.
          */
         $triagensAvaliadas = (clone $avaliacoesBase)
             ->whereNotNull('avaliacao_medicas.triagem_id')
@@ -118,7 +119,7 @@ class AdminController extends Controller
             ->count('avaliacao_medicas.triagem_id');
 
         /*
-         * Qualidade das avaliações.
+         * QUALIDADE DAS AVALIAÇÕES.
          */
         $avaliacoesComNota = (clone $avaliacoesBase)
             ->whereNotNull('avaliacao_medicas.nota_qualidade');
@@ -139,15 +140,13 @@ class AdminController extends Controller
         $notasQualidade = collect(range(1, 5))
             ->map(fn (int $nota) => [
                 'nota' => $nota,
-                'total' => (int) (
-                    $distribuicaoQualidade[$nota] ?? 0
-                ),
+                'total' => (int) ($distribuicaoQualidade[$nota] ?? 0),
             ])
             ->values()
             ->all();
 
         /*
-         * Listagem das avaliações registradas.
+         * LISTAGEM DAS AVALIAÇÕES.
          */
         $avaliacoesQuery = AvaliacaoMedica::query()
             ->join(
@@ -178,12 +177,9 @@ class AdminController extends Controller
             ]);
 
         if ($perfilSelecionado !== 'todos') {
-            $avaliadoresDaLista = User::role($perfilSelecionado)
-                ->select('users.id');
-
             $avaliacoesQuery->whereIn(
                 'avaliacao_medicas.avaliador_id',
-                $avaliadoresDaLista
+                User::role($perfilSelecionado)->select('users.id')
             );
         }
 
@@ -192,7 +188,7 @@ class AdminController extends Controller
             ->get();
 
         /*
-         * Convites recentes.
+         * CONVITES RECENTES.
          */
         $convites = Convite::query()
             ->with('criador:id,name')
@@ -201,9 +197,7 @@ class AdminController extends Controller
             ->get();
 
         /*
-         * Quantidade de avaliadores únicos por perfil.
-         * Cada usuário é contado uma única vez,
-         * mesmo que tenha realizado várias avaliações.
+         * AVALIADORES ÚNICOS POR PERFIL.
          */
         $idsAvaliadores = AvaliacaoMedica::query()
             ->whereNotNull('avaliador_id')
@@ -211,18 +205,9 @@ class AdminController extends Controller
             ->distinct();
 
         $avaliadoresPorPerfil = collect([
-            [
-                'perfil' => 'Médicos',
-                'papel' => 'Medico',
-            ],
-            [
-                'perfil' => 'Estudantes',
-                'papel' => 'Estudante',
-            ],
-            [
-                'perfil' => 'Residentes',
-                'papel' => 'Residente',
-            ],
+            ['perfil' => 'Médicos', 'papel' => 'Medico'],
+            ['perfil' => 'Estudantes', 'papel' => 'Estudante'],
+            ['perfil' => 'Residentes', 'papel' => 'Residente'],
         ])->map(function ($item) use ($idsAvaliadores) {
             $total = User::role($item['papel'])
                 ->whereIn(
@@ -238,28 +223,295 @@ class AdminController extends Controller
         })->values()->all();
 
         /*
-         * Dados enviados para o painel administrativo.
+         * CONSUMO DA API GEMINI.
+         */
+        $usoGeminiBase = LogIA::query();
+
+        $usoGemini30Dias = (clone $usoGeminiBase)
+            ->where('created_at', '>=', now()->subDays(30));
+
+        $resumirUsoGemini = function ($query): array {
+            $totais = (clone $query)
+                ->selectRaw('COUNT(*) as chamadas')
+                ->selectRaw(
+                    "COUNT(*) FILTER (WHERE status = 'sucesso') as chamadas_sucesso"
+                )
+                ->selectRaw(
+                    "COUNT(*) FILTER (WHERE status != 'sucesso') as chamadas_com_problema"
+                )
+                ->selectRaw(
+                    'COALESCE(SUM(tokens_entrada), 0) as tokens_entrada'
+                )
+                ->selectRaw(
+                    'COALESCE(SUM(tokens_saida), 0) as tokens_saida'
+                )
+                ->selectRaw(
+                    'COALESCE(SUM(tokens_raciocinio), 0) as tokens_raciocinio'
+                )
+                ->selectRaw(
+                    'COALESCE(SUM(tokens_cache), 0) as tokens_cache'
+                )
+                ->selectRaw(
+                    'COALESCE(SUM(tokens_total), 0) as tokens_total'
+                )
+                ->selectRaw(
+                    'AVG(tempo_processamento_ms) as tempo_medio_ms'
+                )
+                ->selectRaw('SUM(custo_usd) as custo_usd')
+                ->selectRaw('SUM(custo_brl) as custo_brl')
+                ->selectRaw('COUNT(custo_usd) as registros_com_custo')
+                ->first();
+
+            $custosDisponiveis = (int) $totais->registros_com_custo > 0;
+
+            return [
+                'chamadas' => (int) $totais->chamadas,
+                'chamadas_sucesso' => (int) $totais->chamadas_sucesso,
+                'chamadas_com_problema' => (int) $totais->chamadas_com_problema,
+
+                'tokens_entrada' => (int) $totais->tokens_entrada,
+                'tokens_saida' => (int) $totais->tokens_saida,
+                'tokens_raciocinio' => (int) $totais->tokens_raciocinio,
+                'tokens_cache' => (int) $totais->tokens_cache,
+                'tokens_total' => (int) $totais->tokens_total,
+
+                'tempo_medio_ms' => $totais->tempo_medio_ms !== null
+                    ? (int) round((float) $totais->tempo_medio_ms)
+                    : null,
+
+                'custos_disponiveis' => $custosDisponiveis,
+
+                'custo_usd' => $custosDisponiveis
+                    ? round((float) $totais->custo_usd, 6)
+                    : null,
+
+                'custo_brl' => $totais->custo_brl !== null
+                    ? round((float) $totais->custo_brl, 4)
+                    : null,
+            ];
+        };
+
+        $consumoGemini = [
+            'geral' => $resumirUsoGemini($usoGeminiBase),
+            'ultimos_30_dias' => $resumirUsoGemini($usoGemini30Dias),
+        ];
+
+        /*
+         * CONSUMO POR MODELO.
+         */
+        $consumoPorModelo = (clone $usoGeminiBase)
+            ->select('modelo')
+            ->selectRaw('COUNT(*) as chamadas')
+            ->selectRaw(
+                'COALESCE(SUM(tokens_total), 0) as tokens_total'
+            )
+            ->selectRaw('SUM(custo_usd) as custo_usd')
+            ->selectRaw('SUM(custo_brl) as custo_brl')
+            ->groupBy('modelo')
+            ->orderByDesc('chamadas')
+            ->get()
+            ->map(fn ($item) => [
+                'modelo' => $item->modelo,
+                'chamadas' => (int) $item->chamadas,
+                'tokens_total' => (int) $item->tokens_total,
+
+                'custo_usd' => $item->custo_usd !== null
+                    ? round((float) $item->custo_usd, 6)
+                    : null,
+
+                'custo_brl' => $item->custo_brl !== null
+                    ? round((float) $item->custo_brl, 4)
+                    : null,
+            ])
+            ->values();
+
+        /*
+         * ÚLTIMAS 20 CHAMADAS DA API GEMINI.
+         */
+        $registrosGemini = LogIA::query()
+            ->select([
+                'id',
+                'triagem_id',
+                'modelo',
+                'tokens_entrada',
+                'tokens_saida',
+                'tokens_raciocinio',
+                'tokens_cache',
+                'tokens_total',
+                'custo_usd',
+                'custo_brl',
+                'tempo_processamento_ms',
+                'status',
+                'erro',
+                'created_at',
+            ])
+            ->latest()
+            ->take(20)
+            ->get();
+
+        /*
+         * GRÁFICO DE CUSTOS.
+         *
+         * Filtros aceitos:
+         * - dia: últimas 24 horas, agrupadas por hora;
+         * - semana: últimos 7 dias, agrupados por dia;
+         * - mes: últimos 30 dias, agrupados por dia;
+         * - historico: todo o histórico, agrupado por mês;
+         * - personalizado + data_custos: dia específico;
+         * - personalizado + mes_custos: mês específico.
+         */
+        $filtrosGrafico = $request->validate([
+            'periodo_custos' => [
+                'nullable',
+                'string',
+                Rule::in([
+                    'dia',
+                    'semana',
+                    'mes',
+                    'historico',
+                    'personalizado',
+                ]),
+            ],
+            'data_custos' => [
+                'nullable',
+                'date_format:Y-m-d',
+            ],
+            'mes_custos' => [
+                'nullable',
+                'date_format:Y-m',
+            ],
+        ]);
+
+        $periodoCustosGrafico = $filtrosGrafico['periodo_custos'] ?? 'mes';
+
+        $dataCustosGrafico = $filtrosGrafico['data_custos'] ?? null;
+        $mesCustosGrafico = $filtrosGrafico['mes_custos'] ?? null;
+
+        /*
+         * No modo personalizado, deve ser informado exatamente
+         * um filtro: uma data ou um mês, nunca os dois.
+         */
+        if ($periodoCustosGrafico === 'personalizado') {
+            $temData = !empty($dataCustosGrafico);
+            $temMes = !empty($mesCustosGrafico);
+
+            if ($temData === $temMes) {
+                throw ValidationException::withMessages([
+                    'periodo_custos' => (
+                        'Selecione uma data específica ou um mês para consultar os custos.'
+                    ),
+                ]);
+            }
+        }
+
+        $inicioGrafico = null;
+        $fimGrafico = null;
+
+        switch ($periodoCustosGrafico) {
+            case 'dia':
+                // Últimas 24 horas, agrupadas por hora.
+                $inicioGrafico = now()->subDay();
+                $fimGrafico = now();
+                $expressaoPeriodo = "date_trunc('hour', created_at)";
+                break;
+
+            case 'semana':
+                // Últimos 7 dias, agrupados por dia.
+                $inicioGrafico = now()->subDays(6)->startOfDay();
+                $fimGrafico = now()->addSecond();
+                $expressaoPeriodo = "date_trunc('day', created_at)";
+                break;
+
+            case 'historico':
+                // Todo o histórico, agrupado por mês.
+                $expressaoPeriodo = "date_trunc('month', created_at)";
+                break;
+
+            case 'personalizado':
+                if (!empty($dataCustosGrafico)) {
+                    // Data específica, agrupada por hora.
+                    $inicioGrafico = Carbon::createFromFormat(
+                        '!Y-m-d',
+                        $dataCustosGrafico
+                    );
+
+                    $fimGrafico = $inicioGrafico->copy()->addDay();
+
+                    $expressaoPeriodo = "date_trunc('hour', created_at)";
+                } else {
+                    // Mês específico, agrupado por dia.
+                    $inicioGrafico = Carbon::createFromFormat(
+                        '!Y-m',
+                        $mesCustosGrafico
+                    );
+
+                    $fimGrafico = $inicioGrafico->copy()->addMonth();
+
+                    $expressaoPeriodo = "date_trunc('day', created_at)";
+                }
+                break;
+
+            case 'mes':
+            default:
+                // Últimos 30 dias, agrupados por dia.
+                $inicioGrafico = now()->subDays(29)->startOfDay();
+                $fimGrafico = now()->addSecond();
+                $expressaoPeriodo = "date_trunc('day', created_at)";
+                $periodoCustosGrafico = 'mes';
+                break;
+        }
+
+        /*
+         * A expressão de agrupamento vem exclusivamente do switch acima.
+         * Os valores de data são enviados como parâmetros pelo Query Builder.
+         */
+        $consultaCustos = DB::table('log_ias')
+            ->selectRaw("$expressaoPeriodo AS periodo")
+            ->selectRaw('COALESCE(SUM(custo_brl), 0) AS custo_brl')
+            ->selectRaw('COUNT(*) AS chamadas')
+            ->whereNotNull('custo_brl');
+
+        if ($inicioGrafico !== null) {
+            $consultaCustos->where(
+                'created_at',
+                '>=',
+                $inicioGrafico
+            );
+        }
+
+        if ($fimGrafico !== null) {
+            $consultaCustos->where(
+                'created_at',
+                '<',
+                $fimGrafico
+            );
+        }
+
+        $custosGrafico = $consultaCustos
+            ->groupByRaw($expressaoPeriodo)
+            ->orderByRaw($expressaoPeriodo)
+            ->get()
+            ->map(fn ($item) => [
+                'periodo' => (string) $item->periodo,
+                'custo_brl' => (float) $item->custo_brl,
+                'chamadas' => (int) $item->chamadas,
+            ])
+            ->values();
+
+        /*
+         * DADOS ENVIADOS AO PAINEL ADMINISTRATIVO.
          */
         return Inertia::render('Admin/Index', [
             'filtroPerfil' => $perfilSelecionado,
 
+            'custosGrafico' => $custosGrafico,
+            'periodoCustosGrafico' => $periodoCustosGrafico,
+
             'opcoesPerfil' => [
-                [
-                    'label' => 'Todas as avaliações',
-                    'value' => 'todos',
-                ],
-                [
-                    'label' => 'Estudantes',
-                    'value' => 'Estudante',
-                ],
-                [
-                    'label' => 'Médicos',
-                    'value' => 'Medico',
-                ],
-                [
-                    'label' => 'Residentes',
-                    'value' => 'Residente',
-                ],
+                ['label' => 'Todas as avaliações', 'value' => 'todos'],
+                ['label' => 'Estudantes', 'value' => 'Estudante'],
+                ['label' => 'Médicos', 'value' => 'Medico'],
+                ['label' => 'Residentes', 'value' => 'Residente'],
             ],
 
             'avaliacoes' => $avaliacoes,
@@ -273,11 +525,8 @@ class AdminController extends Controller
                 )->count(),
 
                 'triagens_avaliadas' => $triagensAvaliadas,
-
                 'total_avaliacoes' => $totalAvaliacoes,
-
                 'concordantes' => $concordantes,
-
                 'discordancias' => $discordantes,
 
                 'concordancia_percentual' => $totalComparacoes > 0
@@ -294,10 +543,12 @@ class AdminController extends Controller
                     : null,
 
                 'total_avaliacoes' => $quantidadeNotas,
-
                 'distribuicao' => $notasQualidade,
             ],
 
+            'consumoGemini' => $consumoGemini,
+            'consumoPorModelo' => $consumoPorModelo,
+            'registrosGemini' => $registrosGemini,
             'convites' => $convites,
         ]);
     }

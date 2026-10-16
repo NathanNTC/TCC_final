@@ -10,6 +10,20 @@
 
     <title inertia>{{ config('app.name', 'Triagem IA') }}</title>
 
+    <!-- EVITA PISCADA AO RECARREGAR (PERSISTÊNCIA DO DARK MODE) -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (theme === 'dark' || (!theme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+
     @vite('resources/js/app.js')
 
     @inertiaHead

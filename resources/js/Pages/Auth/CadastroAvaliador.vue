@@ -21,12 +21,12 @@ function cadastrar() {
 <template>
     <Head title="Cadastro de Avaliador" />
 
-    <div class="flex min-h-screen items-center justify-center bg-slate-50/50 px-4 py-10 sm:px-6 lg:px-8">
-        <div class="w-full max-w-lg rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs sm:p-8">
+    <div class="flex min-h-screen items-center justify-center bg-slate-50/50 px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8 dark:bg-slate-950">
+        <div class="w-full max-w-lg rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition-colors duration-200 sm:p-8 dark:border-slate-800 dark:bg-slate-900">
             
             <!-- CABEÇALHO -->
             <div class="mb-8 text-center">
-                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-600/10">
+                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-600/10 dark:bg-emerald-950/60 dark:text-emerald-400 dark:ring-emerald-500/30">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         class="h-7 w-7"
@@ -43,11 +43,11 @@ function cadastrar() {
                     </svg>
                 </div>
 
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
                     Cadastro de avaliador
                 </h1>
 
-                <p class="mt-2 text-sm leading-relaxed text-slate-500">
+                <p class="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                     Crie sua conta utilizando o convite fornecido pelo administrador.
                 </p>
             </div>
@@ -57,7 +57,7 @@ function cadastrar() {
                 
                 <!-- NOME -->
                 <div>
-                    <label for="name" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    <label for="name" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         Nome completo
                     </label>
 
@@ -69,18 +69,18 @@ function cadastrar() {
                         required
                         maxlength="255"
                         :disabled="form.processing"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-emerald-500 dark:focus:bg-slate-900"
                         placeholder="Seu nome completo"
                     />
 
-                    <p v-if="form.errors.name" class="mt-1 text-xs font-medium text-rose-600">
+                    <p v-if="form.errors.name" class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
                         {{ form.errors.name }}
                     </p>
                 </div>
 
                 <!-- EMAIL -->
                 <div>
-                    <label for="email" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    <label for="email" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         E-mail
                     </label>
 
@@ -91,18 +91,18 @@ function cadastrar() {
                         autocomplete="email"
                         required
                         :disabled="form.processing"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-emerald-500 dark:focus:bg-slate-900"
                         placeholder="voce@exemplo.com"
                     />
 
-                    <p v-if="form.errors.email" class="mt-1 text-xs font-medium text-rose-600">
+                    <p v-if="form.errors.email" class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
                         {{ form.errors.email }}
                     </p>
                 </div>
 
                 <!-- CÓDIGO DO CONVITE -->
                 <div>
-                    <label for="codigo" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    <label for="codigo" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         Código do convite
                     </label>
 
@@ -114,22 +114,22 @@ function cadastrar() {
                         required
                         maxlength="64"
                         :disabled="form.processing"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 uppercase outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm uppercase text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-emerald-500 dark:focus:bg-slate-900"
                         placeholder="Ex.: AB12CD34"
                     />
 
-                    <p class="mt-1.5 text-xs text-slate-400">
+                    <p class="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
                         O convite é de uso único e determina seu perfil de acesso.
                     </p>
 
-                    <p v-if="form.errors.codigo" class="mt-1 text-xs font-medium text-rose-600">
+                    <p v-if="form.errors.codigo" class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
                         {{ form.errors.codigo }}
                     </p>
                 </div>
 
                 <!-- SENHA -->
                 <div>
-                    <label for="password" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    <label for="password" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         Senha
                     </label>
 
@@ -140,18 +140,18 @@ function cadastrar() {
                         autocomplete="new-password"
                         required
                         :disabled="form.processing"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-emerald-500 dark:focus:bg-slate-900"
                         placeholder="Crie uma senha"
                     />
 
-                    <p v-if="form.errors.password" class="mt-1 text-xs font-medium text-rose-600">
+                    <p v-if="form.errors.password" class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
                         {{ form.errors.password }}
                     </p>
                 </div>
 
                 <!-- CONFIRMAÇÃO DE SENHA -->
                 <div>
-                    <label for="password_confirmation" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700">
+                    <label for="password_confirmation" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300">
                         Confirmar senha
                     </label>
 
@@ -162,7 +162,7 @@ function cadastrar() {
                         autocomplete="new-password"
                         required
                         :disabled="form.processing"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-emerald-500 dark:focus:bg-slate-900"
                         placeholder="Digite a senha novamente"
                     />
                 </div>
@@ -171,7 +171,7 @@ function cadastrar() {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:shadow-lg active:scale-98 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none cursor-pointer"
+                    class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition-all hover:bg-emerald-700 hover:shadow-lg active:scale-98 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none dark:bg-emerald-600 dark:hover:bg-emerald-500 dark:shadow-emerald-900/30"
                 >
                     <svg
                         v-if="form.processing"
@@ -189,11 +189,11 @@ function cadastrar() {
             </form>
 
             <!-- FOOTER -->
-            <div class="mt-6 text-center text-sm text-slate-500">
+            <div class="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
                 Já possui uma conta?
                 <Link
                     href="/login"
-                    class="font-semibold text-emerald-600 transition-colors hover:text-emerald-700"
+                    class="font-semibold text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
                 >
                     Entrar
                 </Link>

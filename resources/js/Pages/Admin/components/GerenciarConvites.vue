@@ -70,25 +70,19 @@ function codigoConvite(convite) {
 
 /**
  * Verifica se o convite já foi utilizado.
- *
- * Importante: pelo menos um dos campos abaixo precisa
- * ser enviado pelo backend com o estado real do convite.
  */
 function conviteUtilizado(convite) {
-    // Campos booleanos
     const camposBooleanos = [
         convite.utilizado,
         convite.usado,
         convite.is_used,
         convite.is_used_up,
-        convite. utilizado,
     ]
 
     if (camposBooleanos.some(valor => valor === true || valor === 1)) {
         return true
     }
 
-    // Campos de data ou identificador do usuário que utilizou
     const camposDeUso = [
         convite.utilizado_em,
         convite.usado_em,
@@ -135,24 +129,24 @@ function classesStatus(convite) {
     const status = statusConvite(convite)
 
     if (status === 'Utilizado') {
-        return 'bg-blue-50 text-blue-700 ring-blue-600/20'
+        return 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:bg-blue-950/50 dark:text-blue-400 dark:ring-blue-500/30'
     }
 
     if (status === 'Expirado') {
-        return 'bg-rose-50 text-rose-700 ring-rose-600/20'
+        return 'bg-rose-50 text-rose-700 ring-rose-600/20 dark:bg-rose-950/50 dark:text-rose-400 dark:ring-rose-500/30'
     }
 
-    return 'bg-emerald-50 text-emerald-800 ring-emerald-600/20'
+    return 'bg-emerald-50 text-emerald-800 ring-emerald-600/20 dark:bg-emerald-950/50 dark:text-emerald-400 dark:ring-emerald-500/30'
 }
 </script>
 
 <template>
-    <section class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
+    <section class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
 
         <!-- CABEÇALHO -->
-        <div class="border-b border-slate-100 p-6 sm:p-8">
+        <div class="border-b border-slate-100 p-6 sm:p-8 dark:border-slate-800">
             <div class="flex items-center gap-2">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 ring-1 ring-emerald-600/10">
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 ring-1 ring-emerald-600/10 dark:bg-emerald-950/50 dark:text-emerald-400 dark:ring-emerald-500/20">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -169,19 +163,19 @@ function classesStatus(convite) {
                     </svg>
                 </div>
 
-                <h2 class="text-base font-bold text-slate-900">
+                <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
                     Gerenciar convites
                 </h2>
             </div>
 
-            <p class="mt-1 text-sm leading-relaxed text-slate-500">
+            <p class="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                 Gere e distribua códigos de acesso exclusivos para a avaliação de triagens.
             </p>
         </div>
 
         <!-- FORMULÁRIO -->
         <form
-            class="space-y-5 bg-slate-50/50 p-6 sm:p-8"
+            class="space-y-5 bg-slate-50/50 p-6 sm:p-8 dark:bg-slate-800/30"
             @submit.prevent="criarConvite"
         >
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -189,7 +183,7 @@ function classesStatus(convite) {
                 <div>
                     <label
                         for="perfil-convite"
-                        class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+                        class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
                     >
                         Perfil do avaliador
                     </label>
@@ -198,17 +192,17 @@ function classesStatus(convite) {
                         id="perfil-convite"
                         v-model="form.perfil"
                         :disabled="form.processing"
-                        class="w-full cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full cursor-pointer rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-emerald-500"
                         required
                     >
-                        <option value="Estudante">Estudante</option>
-                        <option value="Residente">Residente</option>
-                        <option value="Medico">Médico</option>
+                        <option value="Estudante" class="dark:bg-slate-900">Estudante</option>
+                        <option value="Residente" class="dark:bg-slate-900">Residente</option>
+                        <option value="Medico" class="dark:bg-slate-900">Médico</option>
                     </select>
 
                     <p
                         v-if="form.errors.perfil"
-                        class="mt-1 text-xs font-medium text-rose-600"
+                        class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400"
                     >
                         {{ form.errors.perfil }}
                     </p>
@@ -217,7 +211,7 @@ function classesStatus(convite) {
                 <div>
                     <label
                         for="expira-convite"
-                        class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700"
+                        class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300"
                     >
                         Data de expiração (opcional)
                     </label>
@@ -227,12 +221,12 @@ function classesStatus(convite) {
                         v-model="form.expira_em"
                         type="datetime-local"
                         :disabled="form.processing"
-                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-emerald-500 [color-scheme:light] dark:[color-scheme:dark]"
                     />
 
                     <p
                         v-if="form.errors.expira_em"
-                        class="mt-1 text-xs font-medium text-rose-600"
+                        class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400"
                     >
                         {{ form.errors.expira_em }}
                     </p>
@@ -243,7 +237,7 @@ function classesStatus(convite) {
                 <button
                     type="submit"
                     :disabled="form.processing"
-                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                 >
                     <svg
                         v-if="form.processing"
@@ -272,27 +266,27 @@ function classesStatus(convite) {
                     </span>
                 </button>
 
-                <p class="text-xs text-slate-400">
+                <p class="text-xs text-slate-400 dark:text-slate-500">
                     O código gerado será de uso único e vinculado ao perfil escolhido.
                 </p>
             </div>
 
             <p
                 v-if="form.errors.error"
-                class="mt-2 text-xs font-medium text-rose-600"
+                class="mt-2 text-xs font-medium text-rose-600 dark:text-rose-400"
             >
                 {{ form.errors.error }}
             </p>
         </form>
 
         <!-- LISTA DE CONVITES -->
-        <div class="border-t border-slate-100 p-6 sm:p-8">
+        <div class="border-t border-slate-100 p-6 sm:p-8 dark:border-slate-800">
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <h3 class="text-sm font-bold text-slate-900">
+                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">
                     Convites existentes
                 </h3>
 
-                <span class="text-xs text-slate-400">
+                <span class="text-xs font-medium text-slate-400 dark:text-slate-500">
                     {{ convites.length }}
                     {{ convites.length === 1 ? 'convite' : 'convites' }}
                 </span>
@@ -305,16 +299,16 @@ function classesStatus(convite) {
                 <article
                     v-for="(convite, indice) in convites"
                     :key="convite.id ?? indice"
-                    class="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-4 transition hover:border-slate-300 hover:shadow-xs"
+                    class="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-4 transition hover:border-slate-300 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-slate-700"
                 >
                     <div>
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <span class="text-sm font-bold text-slate-900">
+                                <span class="text-sm font-bold text-slate-900 dark:text-slate-100">
                                     {{ formatarPerfil(convite.perfil) }}
                                 </span>
 
-                                <p class="mt-1 text-xs text-slate-400">
+                                <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">
                                     Expiração:
                                     {{ formatarData(convite.expira_em ?? convite.expires_at) }}
                                 </p>
@@ -341,7 +335,7 @@ function classesStatus(convite) {
 
                         <!-- CÓDIGO -->
                         <div class="mt-4 flex items-center gap-2">
-                            <code class="min-w-0 flex-1 truncate rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs font-semibold text-slate-800">
+                            <code class="min-w-0 flex-1 truncate rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-200">
                                 {{ codigoConvite(convite) || 'Código não informado' }}
                             </code>
 
@@ -351,8 +345,8 @@ function classesStatus(convite) {
                                 :class="[
                                     'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition',
                                     codigoCopiadoId === (convite.id ?? indice)
-                                        ? 'border-emerald-600 bg-emerald-600 text-white'
-                                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                        ? 'border-emerald-600 bg-emerald-600 text-white dark:border-emerald-500 dark:bg-emerald-500'
+                                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800'
                                 ]"
                                 @click="copiarCodigo(codigoConvite(convite), convite.id ?? indice)"
                             >
@@ -379,7 +373,7 @@ function classesStatus(convite) {
                                     viewBox="0 0 24 24"
                                     stroke-width="1.8"
                                     stroke="currentColor"
-                                    class="h-3.5 w-3.5 text-slate-500"
+                                    class="h-3.5 w-3.5 text-slate-500 dark:text-slate-400"
                                 >
                                     <path
                                         stroke-linecap="round"
@@ -396,14 +390,14 @@ function classesStatus(convite) {
 
                         <p
                             v-if="conviteUtilizado(convite)"
-                            class="mt-3 text-xs text-blue-700"
+                            class="mt-3 text-xs text-blue-700 dark:text-blue-400"
                         >
                             Este código já foi utilizado e não deve ser usado novamente.
                         </p>
 
                         <p
                             v-else-if="conviteExpirado(convite)"
-                            class="mt-3 text-xs text-rose-600"
+                            class="mt-3 text-xs text-rose-600 dark:text-rose-400"
                         >
                             A validade deste convite terminou.
                         </p>
@@ -414,7 +408,7 @@ function classesStatus(convite) {
             <!-- ESTADO VAZIO -->
             <div
                 v-else
-                class="py-8 text-center text-xs text-slate-400"
+                class="py-8 text-center text-xs text-slate-400 dark:text-slate-500"
             >
                 Nenhum convite gerado até o momento.
             </div>

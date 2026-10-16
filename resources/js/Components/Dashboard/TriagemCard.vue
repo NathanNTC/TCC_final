@@ -3,36 +3,19 @@ import { Link } from '@inertiajs/vue3'
 </script>
 
 <template>
-    <section
-        class="relative mt-8 overflow-hidden rounded-2xl
-               border border-blue-100 bg-blue-50"
-    >
+    <section class="relative mt-8 overflow-hidden rounded-2xl border border-emerald-100/80 bg-emerald-50/60 shadow-xs dark:border-emerald-900/40 dark:bg-emerald-950/20">
+        <!-- CÍRCULO DECORATIVO DE FUNDO -->
+        <div class="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-emerald-100/60 dark:bg-emerald-900/20" />
 
-        <div
-            class="absolute -right-16 -top-16 h-40 w-40
-                   rounded-full bg-blue-100/70"
-        />
-
-        <div
-            class="relative flex flex-col gap-6 p-6
-                   sm:p-7 md:flex-row md:items-center
-                   md:justify-between"
-        >
-
+        <div class="relative flex flex-col gap-6 p-6 sm:p-7 md:flex-row md:items-center md:justify-between">
             <div class="max-w-2xl">
-
                 <div class="flex items-center gap-3">
-
-                    <div 
-                        class="flex h-11 w-11 items-center
-                               justify-center rounded-xl
-                               bg-blue-600 text-white shadow-sm"
-                    >
+                    <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs dark:bg-emerald-500">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
-                            stroke-width="1.8"
+                            stroke-width="2"
                             stroke="currentColor"
                             class="h-5 w-5"
                         >
@@ -44,36 +27,21 @@ import { Link } from '@inertiajs/vue3'
                         </svg>
                     </div>
 
-                    <h2 class="text-lg font-semibold text-slate-900">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100">
                         Iniciar triagem
                     </h2>
-
                 </div>
 
-                <p
-                    class="mt-4 text-sm leading-relaxed
-                           text-slate-600"
-                >
-                    Utilize suas informações de saúde cadastradas para
-                    iniciar uma nova coleta de dados clínicos com auxílio
-                    da inteligência artificial.
+                <p class="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                    Utilize suas informações de saúde cadastradas para iniciar uma nova coleta de dados clínicos com auxílio da inteligência artificial.
                 </p>
-
             </div>
 
             <div class="flex shrink-0 flex-col gap-3 sm:flex-row">
-
                 <!-- NOVA TRIAGEM -->
                 <Link
                     href="/triagens/nova"
-                    class="inline-flex items-center
-                           justify-center gap-2 rounded-xl
-                           bg-blue-600 px-6 py-3 text-sm
-                           font-semibold text-white shadow-sm
-                           transition-all duration-200
-                           hover:bg-blue-700 hover:shadow-md
-                           focus:outline-none focus:ring-2
-                           focus:ring-blue-500 focus:ring-offset-2"
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-xs transition-all duration-200 hover:bg-emerald-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                 >
                     Iniciar triagem
 
@@ -96,17 +64,7 @@ import { Link } from '@inertiajs/vue3'
                 <!-- MINHAS TRIAGENS -->
                 <Link
                     href="/triagens"
-                    class="inline-flex items-center
-                           justify-center gap-2 rounded-xl
-                           border border-blue-200 bg-white
-                           px-6 py-3 text-sm font-semibold
-                           text-blue-700 shadow-sm
-                           transition-all duration-200
-                           hover:border-blue-300
-                           hover:bg-blue-50
-                           hover:shadow-md
-                           focus:outline-none focus:ring-2
-                           focus:ring-blue-500 focus:ring-offset-2"
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-emerald-200/80 bg-white px-6 py-3 text-sm font-semibold text-emerald-800 shadow-xs transition-all duration-200 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 active:scale-95 dark:border-emerald-800/80 dark:bg-slate-900 dark:text-emerald-300 dark:hover:border-emerald-700 dark:hover:bg-slate-800"
                 >
                     Minhas triagens
 
@@ -125,11 +83,7 @@ import { Link } from '@inertiajs/vue3'
                         />
                     </svg>
                 </Link>
-
             </div>
-
         </div>
-
     </section>
 </template>
-

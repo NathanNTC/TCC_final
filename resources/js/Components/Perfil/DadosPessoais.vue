@@ -204,30 +204,24 @@ onMounted(() => {
 
 <template>
     <div>
-
         <!-- CABEÇALHO -->
-
         <div class="mb-8">
-            <h2 class="text-2xl font-bold text-gray-800">
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">
                 Dados pessoais
             </h2>
 
-            <p class="mt-1 text-sm text-gray-500">
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Informe seus dados básicos para completar seu perfil.
             </p>
         </div>
 
-
         <!-- CAMPOS -->
-
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-
             <!-- CPF -->
-
             <div>
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     CPF
-                    <span class="text-red-500">*</span>
+                    <span class="text-rose-500">*</span>
                 </label>
 
                 <input
@@ -237,33 +231,31 @@ onMounted(() => {
                     inputmode="numeric"
                     maxlength="14"
                     placeholder="000.000.000-00"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-1.5 block w-full rounded-xl border border-slate-200/80 bg-white p-3 font-mono text-sm text-slate-800 placeholder-slate-400 shadow-xs transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-emerald-500"
                 >
 
-                <p class="mt-1 text-xs text-gray-500">
+                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                     Digite apenas os números do CPF.
                 </p>
 
                 <p
                     v-if="form.errors.cpf"
-                    class="mt-1 text-sm text-red-600"
+                    class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400"
                 >
                     {{ form.errors.cpf }}
                 </p>
             </div>
 
-
             <!-- SEXO -->
-
             <div>
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Sexo
-                    <span class="text-red-500">*</span>
+                    <span class="text-rose-500">*</span>
                 </label>
 
                 <select
                     v-model="form.sexo"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-1.5 block w-full rounded-xl border border-slate-200/80 bg-white p-3 text-sm text-slate-800 shadow-xs transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-emerald-500"
                 >
                     <option value="">
                         Selecione
@@ -280,42 +272,38 @@ onMounted(() => {
 
                 <p
                     v-if="form.errors.sexo"
-                    class="mt-1 text-sm text-red-600"
+                    class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400"
                 >
                     {{ form.errors.sexo }}
                 </p>
             </div>
 
-
             <!-- DATA DE NASCIMENTO -->
-
             <div>
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Data de nascimento
-                    <span class="text-red-500">*</span>
+                    <span class="text-rose-500">*</span>
                 </label>
 
                 <input
                     v-model="form.data_nascimento"
                     type="date"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-1.5 block w-full rounded-xl border border-slate-200/80 bg-white p-3 text-sm text-slate-800 shadow-xs transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-emerald-500"
                 >
 
                 <p
                     v-if="form.errors.data_nascimento"
-                    class="mt-1 text-sm text-red-600"
+                    class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400"
                 >
                     {{ form.errors.data_nascimento }}
                 </p>
             </div>
 
-
             <!-- TELEFONE -->
-
             <div>
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Telefone
-                    <span class="text-red-500">*</span>
+                    <span class="text-rose-500">*</span>
                 </label>
 
                 <input
@@ -325,29 +313,27 @@ onMounted(() => {
                     inputmode="numeric"
                     maxlength="15"
                     placeholder="(51) 99999-9999"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-1.5 block w-full rounded-xl border border-slate-200/80 bg-white p-3 font-mono text-sm text-slate-800 placeholder-slate-400 shadow-xs transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-emerald-500"
                 >
 
                 <p
                     v-if="form.errors.telefone"
-                    class="mt-1 text-sm text-red-600"
+                    class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400"
                 >
                     {{ form.errors.telefone }}
                 </p>
             </div>
 
-
             <!-- ESTADO -->
-
             <div>
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Estado
-                    <span class="text-red-500">*</span>
+                    <span class="text-rose-500">*</span>
                 </label>
 
                 <select
                     v-model="form.estado"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-1.5 block w-full rounded-xl border border-slate-200/80 bg-white p-3 text-sm text-slate-800 shadow-xs transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-emerald-500"
                 >
                     <option value="">
                         Selecione o estado
@@ -364,25 +350,23 @@ onMounted(() => {
 
                 <p
                     v-if="form.errors.estado"
-                    class="mt-1 text-sm text-red-600"
+                    class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400"
                 >
                     {{ form.errors.estado }}
                 </p>
             </div>
 
-
             <!-- CIDADE -->
-
             <div>
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Cidade
-                    <span class="text-red-500">*</span>
+                    <span class="text-rose-500">*</span>
                 </label>
 
                 <select
                     v-model="form.cidade"
                     :disabled="!form.estado || carregandoCidades"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm disabled:cursor-not-allowed disabled:bg-gray-100"
+                    class="mt-1.5 block w-full rounded-xl border border-slate-200/80 bg-white p-3 text-sm text-slate-800 shadow-xs transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:focus:border-emerald-500 dark:disabled:bg-slate-800/50 dark:disabled:text-slate-500"
                 >
                     <option value="">
                         {{
@@ -405,17 +389,15 @@ onMounted(() => {
 
                 <p
                     v-if="form.errors.cidade"
-                    class="mt-1 text-sm text-red-600"
+                    class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400"
                 >
                     {{ form.errors.cidade }}
                 </p>
             </div>
 
-
             <!-- PROFISSÃO -->
-
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
                     Profissão
                 </label>
 
@@ -424,21 +406,16 @@ onMounted(() => {
                     type="text"
                     maxlength="255"
                     placeholder="Ex.: Engenheiro de Software"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-1.5 block w-full rounded-xl border border-slate-200/80 bg-white p-3 text-sm text-slate-800 placeholder-slate-400 shadow-xs transition focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-emerald-500"
                 >
 
                 <p
                     v-if="form.errors.profissao"
-                    class="mt-1 text-sm text-red-600"
+                    class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400"
                 >
                     {{ form.errors.profissao }}
                 </p>
             </div>
-
-
-            
-
         </div>
-
     </div>
 </template>

@@ -197,7 +197,7 @@ function salvar() {
                     <button
                         type="button"
                         @click="voltar"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-xs transition hover:border-slate-300 hover:bg-slate-50 active:scale-95"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-xs transition hover:border-slate-300 hover:bg-slate-50 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:bg-slate-800"
                         title="Voltar para o perfil"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4">
@@ -207,14 +207,14 @@ function salvar() {
 
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="text-xl font-bold tracking-tight text-slate-800">
+                            <h1 class="text-xl font-bold tracking-tight text-slate-800 dark:text-slate-100">
                                 {{ titulo }}
                             </h1>
-                            <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+                            <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-500/30">
                                 Edição
                             </span>
                         </div>
-                        <p class="mt-0.5 text-xs text-slate-500">
+                        <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                             {{ descricao }}
                         </p>
                     </div>
@@ -227,14 +227,14 @@ function salvar() {
             </div>
 
             <!-- CARD DE ERROS GERAIS -->
-            <div v-if="Object.keys(form.errors).length > 0" class="mb-6 rounded-xl border border-rose-200 bg-rose-50/80 p-4 text-xs text-rose-800">
-                <div class="flex items-center gap-2 font-semibold text-rose-900">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4 text-rose-600">
+            <div v-if="Object.keys(form.errors).length > 0" class="mb-6 rounded-xl border border-rose-200 bg-rose-50/80 p-4 text-xs text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
+                <div class="flex items-center gap-2 font-semibold text-rose-900 dark:text-rose-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4 text-rose-600 dark:text-rose-400">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9 3.75h.008v.008H12v-.008z" />
                     </svg>
                     Existem campos que precisam de sua atenção:
                 </div>
-                <ul class="mt-1.5 list-disc list-inside space-y-0.5 text-rose-700">
+                <ul class="mt-1.5 list-disc list-inside space-y-0.5 text-rose-700 dark:text-rose-300">
                     <li v-for="(erro, campo) in form.errors" :key="campo">
                         {{ erro }}
                     </li>
@@ -243,7 +243,7 @@ function salvar() {
 
             <!-- FORMULÁRIO DINÂMICO -->
             <form @submit.prevent="salvar" class="space-y-6">
-                <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+                <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
 
                     <DadosPessoais
                         v-if="secao === 'dados-pessoais'"
@@ -288,11 +288,11 @@ function salvar() {
                 </div>
 
                 <!-- RODAPÉ DE AÇÕES DA PÁGINA -->
-                <div class="flex items-center justify-end gap-3 rounded-2xl border border-slate-200/80 bg-white px-6 py-4 shadow-xs">
+                <div class="flex items-center justify-end gap-3 rounded-2xl border border-slate-200/80 bg-white px-6 py-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
                     <button
                         type="button"
                         @click="voltar"
-                        class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-95"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-95 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                     >
                         Cancelar
                     </button>
@@ -300,7 +300,7 @@ function salvar() {
                     <button
                         type="submit"
                         :disabled="form.processing"
-                        class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95 disabled:opacity-50"
+                        class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95 disabled:opacity-50 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                     >
                         <svg v-if="form.processing" class="h-4 w-4 animate-spin text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
