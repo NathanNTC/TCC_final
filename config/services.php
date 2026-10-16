@@ -9,8 +9,8 @@ return [
     |
     | This file is for storing the credentials for third party services such
     | as Mailgun, Postmark, AWS and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
+    | location for packages to have a conventional file to locate the various
+    | service credentials.
     |
     */
 
@@ -39,18 +39,42 @@ return [
 
     'gemini' => [
 
-        'api_key' => env(
-            'GEMINI_API_KEY'
-        ),
+        'api_key' => env('GEMINI_API_KEY'),
 
         'model' => env(
             'GEMINI_MODEL',
             'gemini-2.5-flash'
         ),
 
-        'triagem_cache' => env(
-            'GEMINI_TRIAGEM_CACHE'
-        ),
+        'triagem_cache' => env('GEMINI_TRIAGEM_CACHE'),
+
+        /*
+        |--------------------------------------------------------------------------
+        | Estimativa de custos e consumo
+        |--------------------------------------------------------------------------
+        |
+        | Os preços são informados em dólares por milhão de tokens.
+        | A cotação do dólar é usada para estimar o custo em reais.
+        | Preencha os valores no .env conforme o modelo e os preços
+        | efetivamente aplicáveis à sua conta do Gemini.
+        |
+        */
+
+        'usd_brl_rate' => env('GEMINI_USD_BRL_RATE'),
+
+        'pricing' => [
+            'input_per_million_usd' => env(
+                'GEMINI_INPUT_PRICE_PER_MILLION_USD'
+            ),
+
+            'output_per_million_usd' => env(
+                'GEMINI_OUTPUT_PRICE_PER_MILLION_USD'
+            ),
+
+            'cached_input_per_million_usd' => env(
+                'GEMINI_CACHED_INPUT_PRICE_PER_MILLION_USD'
+            ),
+        ],
     ],
 
     'slack' => [
@@ -64,4 +88,3 @@ return [
     ],
 
 ];
-

@@ -10,10 +10,14 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
-use Throwable;
 
 class GeminiService
 {
+    public function __construct(
+        private readonly UsoGeminiService $usoGeminiService
+    ) {
+    }
+
     /**
      * Envia a conversa atual ao Gemini e retorna
      * uma resposta estruturada em JSON.
@@ -262,7 +266,17 @@ class GeminiService
 
         $json = $response->json();
 
+        if (!is_array($json)) {
+            throw new RuntimeException(
+                'A resposta HTTP do Gemini não contém JSON válido.'
+            );
+        }
+
         $usageMetadata = data_get($json, 'usageMetadata', []);
+
+        if (!is_array($usageMetadata)) {
+            $usageMetadata = [];
+        }
 
         Log::info(
             'Uso de tokens do Gemini.',
@@ -291,6 +305,14 @@ class GeminiService
                     0
                 ),
             ]
+        );
+
+        // Delegação do registro de consumo ao serviço especializado.
+        $this->usoGeminiService->registrar(
+            triagem: $triagem,
+            modelo: $model,
+            usageMetadata: $usageMetadata,
+            tempoMs: $tempoMs,
         );
 
         $texto = data_get(
@@ -563,4 +585,3 @@ class GeminiService
         return implode("\n", $dados);
     }
 }
-
