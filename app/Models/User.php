@@ -2,19 +2,22 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ResetPasswordNotification;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
-     * The attributes that are mass assignable.
+     * Os atributos que podem ser preenchidos em massa.
      *
      * @var list<string>
      */
@@ -25,7 +28,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Os atributos que devem ficar ocultos na serialização.
      *
      * @var list<string>
      */
@@ -35,7 +38,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Conversões de atributos.
      *
      * @return array<string, string>
      */
@@ -45,5 +48,42 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relacionamento 1:1 com Paciente.
+     */
+    public function paciente(): HasOne
+    {
+        return $this->hasOne(Paciente::class);
+    }
+
+    /**
+     * Relacionamento 1:N com avaliações médicas.
+     */
+    public function avaliacoesMedicas(): HasMany
+    {
+        return $this->hasMany(
+            AvaliacaoMedica::class,
+            'avaliador_id'
+        );
+    }
+
+    /**
+     * Relacionamento 1:1 com Médico.
+     */
+    public function medico(): HasOne
+    {
+        return $this->hasOne(Medico::class);
+    }
+
+    /**
+     * Envia a notificação personalizada de redefinição de senha.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(
+            new ResetPasswordNotification($token)
+        );
     }
 }
