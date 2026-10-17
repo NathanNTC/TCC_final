@@ -25,6 +25,14 @@ class Triagem extends Model
         'finalizada_em',
     ];
 
+        /**
+     * Feedback de experiência do paciente.
+     */
+    public function feedbacks(): HasMany
+    {
+        return $this->hasMany(Feedback::class);
+    }
+
     protected function casts(): array
     {
         return [

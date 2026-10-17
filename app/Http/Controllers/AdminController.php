@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AvaliacaoEficienciaIA;
 use App\Models\AvaliacaoMedica;
 use App\Models\Convite;
+use App\Models\Feedback;
 use App\Models\LogIA;
 use App\Models\Triagem;
 use App\Models\User;
@@ -46,7 +48,7 @@ class AdminController extends Controller
         $perfilSelecionado = $dados['perfil'] ?? 'todos';
 
         /*
-         * CONSULTA-BASE DAS AVALIAÇÕES.
+         * CONSULTA-BASE DAS AVALIAÇÕES MÉDICAS.
          */
         $avaliadores = null;
 
@@ -65,7 +67,7 @@ class AdminController extends Controller
         }
 
         /*
-         * TOTAL DE AVALIAÇÕES.
+         * TOTAL DE AVALIAÇÕES MÉDICAS.
          */
         $totalAvaliacoes = (clone $avaliacoesBase)->count();
 
@@ -88,7 +90,7 @@ class AdminController extends Controller
             ->count('avaliacao_medicas.id');
 
         /*
-         * COMPARAÇÕES VÁLIDAS ENTRE A PRIORIDADE HUMANA E A IA.
+         * COMPARAÇÕES VÁLIDAS ENTRE PRIORIDADE HUMANA E IA.
          */
         $avaliacoesComparaveis = (clone $avaliacoesBase)
             ->join(
@@ -119,7 +121,7 @@ class AdminController extends Controller
             ->count('avaliacao_medicas.triagem_id');
 
         /*
-         * QUALIDADE DAS AVALIAÇÕES.
+         * QUALIDADE DAS AVALIAÇÕES MÉDICAS.
          */
         $avaliacoesComNota = (clone $avaliacoesBase)
             ->whereNotNull('avaliacao_medicas.nota_qualidade');
@@ -146,7 +148,7 @@ class AdminController extends Controller
             ->all();
 
         /*
-         * LISTAGEM DAS AVALIAÇÕES.
+         * LISTAGEM DAS AVALIAÇÕES MÉDICAS.
          */
         $avaliacoesQuery = AvaliacaoMedica::query()
             ->join(
@@ -268,7 +270,6 @@ class AdminController extends Controller
                 'chamadas' => (int) $totais->chamadas,
                 'chamadas_sucesso' => (int) $totais->chamadas_sucesso,
                 'chamadas_com_problema' => (int) $totais->chamadas_com_problema,
-
                 'tokens_entrada' => (int) $totais->tokens_entrada,
                 'tokens_saida' => (int) $totais->tokens_saida,
                 'tokens_raciocinio' => (int) $totais->tokens_raciocinio,
@@ -314,11 +315,9 @@ class AdminController extends Controller
                 'modelo' => $item->modelo,
                 'chamadas' => (int) $item->chamadas,
                 'tokens_total' => (int) $item->tokens_total,
-
                 'custo_usd' => $item->custo_usd !== null
                     ? round((float) $item->custo_usd, 6)
                     : null,
-
                 'custo_brl' => $item->custo_brl !== null
                     ? round((float) $item->custo_brl, 4)
                     : null,
@@ -350,15 +349,7 @@ class AdminController extends Controller
             ->get();
 
         /*
-         * GRÁFICO DE CUSTOS.
-         *
-         * Filtros aceitos:
-         * - dia: últimas 24 horas, agrupadas por hora;
-         * - semana: últimos 7 dias, agrupados por dia;
-         * - mes: últimos 30 dias, agrupados por dia;
-         * - historico: todo o histórico, agrupado por mês;
-         * - personalizado + data_custos: dia específico;
-         * - personalizado + mes_custos: mês específico.
+         * FILTROS DO GRÁFICO DE CUSTOS.
          */
         $filtrosGrafico = $request->validate([
             'periodo_custos' => [
@@ -383,14 +374,9 @@ class AdminController extends Controller
         ]);
 
         $periodoCustosGrafico = $filtrosGrafico['periodo_custos'] ?? 'mes';
-
         $dataCustosGrafico = $filtrosGrafico['data_custos'] ?? null;
         $mesCustosGrafico = $filtrosGrafico['mes_custos'] ?? null;
 
-        /*
-         * No modo personalizado, deve ser informado exatamente
-         * um filtro: uma data ou um mês, nunca os dois.
-         */
         if ($periodoCustosGrafico === 'personalizado') {
             $temData = !empty($dataCustosGrafico);
             $temMes = !empty($mesCustosGrafico);
@@ -409,51 +395,43 @@ class AdminController extends Controller
 
         switch ($periodoCustosGrafico) {
             case 'dia':
-                // Últimas 24 horas, agrupadas por hora.
                 $inicioGrafico = now()->subDay();
                 $fimGrafico = now();
                 $expressaoPeriodo = "date_trunc('hour', created_at)";
                 break;
 
             case 'semana':
-                // Últimos 7 dias, agrupados por dia.
                 $inicioGrafico = now()->subDays(6)->startOfDay();
                 $fimGrafico = now()->addSecond();
                 $expressaoPeriodo = "date_trunc('day', created_at)";
                 break;
 
             case 'historico':
-                // Todo o histórico, agrupado por mês.
                 $expressaoPeriodo = "date_trunc('month', created_at)";
                 break;
 
             case 'personalizado':
                 if (!empty($dataCustosGrafico)) {
-                    // Data específica, agrupada por hora.
                     $inicioGrafico = Carbon::createFromFormat(
                         '!Y-m-d',
                         $dataCustosGrafico
                     );
 
                     $fimGrafico = $inicioGrafico->copy()->addDay();
-
                     $expressaoPeriodo = "date_trunc('hour', created_at)";
                 } else {
-                    // Mês específico, agrupado por dia.
                     $inicioGrafico = Carbon::createFromFormat(
                         '!Y-m',
                         $mesCustosGrafico
                     );
 
                     $fimGrafico = $inicioGrafico->copy()->addMonth();
-
                     $expressaoPeriodo = "date_trunc('day', created_at)";
                 }
                 break;
 
             case 'mes':
             default:
-                // Últimos 30 dias, agrupados por dia.
                 $inicioGrafico = now()->subDays(29)->startOfDay();
                 $fimGrafico = now()->addSecond();
                 $expressaoPeriodo = "date_trunc('day', created_at)";
@@ -461,10 +439,6 @@ class AdminController extends Controller
                 break;
         }
 
-        /*
-         * A expressão de agrupamento vem exclusivamente do switch acima.
-         * Os valores de data são enviados como parâmetros pelo Query Builder.
-         */
         $consultaCustos = DB::table('log_ias')
             ->selectRaw("$expressaoPeriodo AS periodo")
             ->selectRaw('COALESCE(SUM(custo_brl), 0) AS custo_brl')
@@ -472,19 +446,11 @@ class AdminController extends Controller
             ->whereNotNull('custo_brl');
 
         if ($inicioGrafico !== null) {
-            $consultaCustos->where(
-                'created_at',
-                '>=',
-                $inicioGrafico
-            );
+            $consultaCustos->where('created_at', '>=', $inicioGrafico);
         }
 
         if ($fimGrafico !== null) {
-            $consultaCustos->where(
-                'created_at',
-                '<',
-                $fimGrafico
-            );
+            $consultaCustos->where('created_at', '<', $fimGrafico);
         }
 
         $custosGrafico = $consultaCustos
@@ -497,6 +463,279 @@ class AdminController extends Controller
                 'chamadas' => (int) $item->chamadas,
             ])
             ->values();
+
+        /*
+         * AVALIAÇÕES GERAIS DE EFICIÊNCIA DA IA.
+         */
+        $avaliacoesEficiencia = AvaliacaoEficienciaIA::query()
+            ->with('avaliador')
+            ->latest()
+            ->get();
+
+        $criteriosEficiencia = [
+            'clareza_perguntas' => 'Clareza das perguntas',
+            'relevancia_perguntas' => 'Relevância das perguntas',
+            'coleta_dados' => 'Coleta de dados clínicos',
+            'qualidade_respostas' => 'Qualidade das respostas',
+            'utilidade_resumo' => 'Utilidade do resumo clínico',
+            'eficiencia_geral' => 'Eficiência geral',
+        ];
+
+        $totalAvaliacoesEficiencia = $avaliacoesEficiencia->count();
+
+        $mediasEficiencia = collect($criteriosEficiencia)
+            ->map(function ($rotulo, $campo) use ($avaliacoesEficiencia) {
+                $notas = $avaliacoesEficiencia
+                    ->pluck($campo)
+                    ->filter(fn ($nota) => $nota !== null && $nota !== '');
+
+                return [
+                    'campo' => $campo,
+                    'rotulo' => $rotulo,
+                    'media' => $notas->isNotEmpty()
+                        ? round((float) $notas->avg(), 2)
+                        : null,
+                ];
+            })
+            ->values()
+            ->all();
+
+        $notasGerais = $avaliacoesEficiencia
+            ->pluck('eficiencia_geral')
+            ->filter(fn ($nota) => $nota !== null && $nota !== '');
+
+        $eficienciaIA = [
+            'total_avaliacoes' => $totalAvaliacoesEficiencia,
+            'media_geral' => $notasGerais->isNotEmpty()
+                ? round((float) $notasGerais->avg(), 2)
+                : null,
+            'medias' => $mediasEficiencia,
+        ];
+
+        /*
+         * EFICIÊNCIA GERAL POR PERFIL.
+         */
+        $eficienciaPorPerfil = collect([
+            ['perfil' => 'Médicos', 'papel' => 'Medico'],
+            ['perfil' => 'Residentes', 'papel' => 'Residente'],
+            ['perfil' => 'Estudantes', 'papel' => 'Estudante'],
+        ])->map(function ($item) use ($avaliacoesEficiencia) {
+            $avaliacoesPerfil = $avaliacoesEficiencia
+                ->filter(fn ($avaliacao) =>
+                    $avaliacao->avaliador?->hasRole($item['papel'])
+                );
+
+            $notas = $avaliacoesPerfil
+                ->pluck('eficiencia_geral')
+                ->filter(fn ($nota) => $nota !== null && $nota !== '');
+
+            return [
+                'perfil' => $item['perfil'],
+                'total' => $avaliacoesPerfil->count(),
+                'media_geral' => $notas->isNotEmpty()
+                    ? round((float) $notas->avg(), 2)
+                    : null,
+            ];
+        })->values()->all();
+
+        /*
+         * COMENTÁRIOS DAS AVALIAÇÕES PROFISSIONAIS.
+         */
+        $comentariosProfissionais = $avaliacoesEficiencia
+            ->filter(fn ($avaliacao) =>
+                filled($avaliacao->comentarios)
+                || filled($avaliacao->pontos_melhoria)
+            )
+            ->map(fn ($avaliacao) => [
+                'id' => 'profissional-' . $avaliacao->id,
+                'perfil' => match (
+                    $avaliacao->avaliador?->getRoleNames()->first()
+                ) {
+                    'Medico' => 'Médico',
+                    'Residente' => 'Residente',
+                    'Estudante' => 'Estudante',
+                    default => 'Avaliador',
+                },
+                'comentarios' => $avaliacao->comentarios,
+                'pontos_melhoria' => $avaliacao->pontos_melhoria,
+                '_data_ordenacao' => $avaliacao->created_at?->timestamp ?? 0,
+                'created_at' => $avaliacao->created_at?->format('d/m/Y H:i'),
+            ]);
+
+        /*
+         * FEEDBACK DE EXPERIÊNCIA DOS PACIENTES.
+         */
+        $feedbacksPacientes = Feedback::query()
+            ->with('user')
+            ->latest()
+            ->get();
+
+        $comentariosPacientes = $feedbacksPacientes
+            ->filter(fn ($feedback) => filled($feedback->comentario))
+            ->map(fn ($feedback) => [
+                'id' => 'paciente-' . $feedback->id,
+                'perfil' => 'Paciente',
+                'comentarios' => $feedback->comentario,
+                'pontos_melhoria' => null,
+                '_data_ordenacao' => $feedback->created_at?->timestamp ?? 0,
+                'created_at' => $feedback->created_at?->format('d/m/Y H:i'),
+            ]);
+
+        $comentariosEficiencia = $comentariosProfissionais
+            ->concat($comentariosPacientes)
+            ->sortByDesc('_data_ordenacao')
+            ->take(20)
+            ->map(function ($item) {
+                unset($item['_data_ordenacao']);
+
+                return $item;
+            })
+            ->values()
+            ->all();
+
+        /*
+         * INDICADORES DE EXPERIÊNCIA E UTILIZAÇÃO PELOS PACIENTES.
+         */
+        $totalPacientes = User::role('Paciente')->count();
+        $totalTriagens = Triagem::count();
+
+        $triagensConcluidas = Triagem::query()
+            ->where('status', 'concluida')
+            ->count();
+
+        $notasFeedback = $feedbacksPacientes
+            ->pluck('nota')
+            ->filter(fn ($nota) => $nota !== null && $nota !== '');
+
+        /*
+         * DISTRIBUIÇÃO POR STATUS.
+         */
+        $triagensPorStatus = Triagem::query()
+            ->selectRaw("
+                COALESCE(NULLIF(TRIM(status), ''), 'sem_status') AS categoria,
+                COUNT(*) AS total
+            ")
+            ->groupByRaw("
+                COALESCE(NULLIF(TRIM(status), ''), 'sem_status')
+            ")
+            ->orderBy('categoria')
+            ->get()
+            ->map(fn ($item) => [
+                'categoria' => ucfirst(
+                    str_replace('_', ' ', $item->categoria)
+                ),
+                'total' => (int) $item->total,
+            ])
+            ->values()
+            ->all();
+
+        /*
+         * DISTRIBUIÇÃO POR PRIORIDADE DA IA.
+         *
+         * Inclui todas as prioridades existentes, inclusive null ou string vazia.
+         * O componente Vue garante que as cinco prioridades sejam exibidas,
+         * mesmo quando alguma delas tiver zero registros.
+         */
+        $triagensPorPrioridade = Triagem::query()
+            ->selectRaw("
+                CASE
+                    WHEN prioridade_ia IS NULL
+                        OR TRIM(prioridade_ia) = ''
+                    THEN 'nao_informada'
+                    ELSE LOWER(TRIM(prioridade_ia))
+                END AS categoria,
+                COUNT(*) AS total
+            ")
+            ->groupByRaw("
+                CASE
+                    WHEN prioridade_ia IS NULL
+                        OR TRIM(prioridade_ia) = ''
+                    THEN 'nao_informada'
+                    ELSE LOWER(TRIM(prioridade_ia))
+                END
+            ")
+            ->orderBy('categoria')
+            ->get()
+            ->map(fn ($item) => [
+                'categoria' => $item->categoria,
+                'total' => (int) $item->total,
+            ])
+            ->values()
+            ->all();
+
+        $indicadoresPaciente = [
+            'total_pacientes' => $totalPacientes,
+            'total_triagens' => $totalTriagens,
+            'triagens_concluidas' => $triagensConcluidas,
+
+            'percentual_concluidas' => $totalTriagens > 0
+                ? round(($triagensConcluidas / $totalTriagens) * 100, 1)
+                : 0,
+
+            'total_feedbacks' => $feedbacksPacientes->count(),
+
+            'media_nota_pacientes' => $notasFeedback->isNotEmpty()
+                ? round((float) $notasFeedback->avg(), 2)
+                : null,
+
+            'facilidade' => $feedbacksPacientes
+                ->groupBy(fn ($feedback) =>
+                    filled($feedback->facilidade)
+                        ? $feedback->facilidade
+                        : 'Não informado'
+                )
+                ->map(fn ($grupo, $facilidade) => [
+                    'categoria' => $facilidade,
+                    'total' => $grupo->count(),
+                ])
+                ->values()
+                ->all(),
+
+            'clareza' => $feedbacksPacientes
+                ->groupBy(fn ($feedback) =>
+                    filled($feedback->clareza)
+                        ? $feedback->clareza
+                        : 'Não informado'
+                )
+                ->map(fn ($grupo, $clareza) => [
+                    'categoria' => $clareza,
+                    'total' => $grupo->count(),
+                ])
+                ->values()
+                ->all(),
+
+            'triagens_por_status' => $triagensPorStatus,
+            'triagens_por_prioridade' => $triagensPorPrioridade,
+        ];
+
+        /*
+         * AVALIAÇÕES MÉDICAS: INDICADORES SEPARADOS DA EFICIÊNCIA GERAL.
+         */
+        $avaliacoesMedicasComNota = AvaliacaoMedica::query()
+            ->whereNotNull('nota_qualidade');
+
+        $totalAvaliacoesMedicasComNota = (clone $avaliacoesMedicasComNota)
+            ->count();
+
+        $mediaQualidadeMedica = (clone $avaliacoesMedicasComNota)
+            ->avg('nota_qualidade');
+
+        $comentariosMedicos = AvaliacaoMedica::query()
+            ->with('avaliador:id,name')
+            ->whereNotNull('comentario_qualidade')
+            ->whereRaw("TRIM(comentario_qualidade) <> ''")
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(fn ($avaliacao) => [
+                'id' => 'avaliacao-medica-' . $avaliacao->id,
+                'perfil' => 'Avaliação médica',
+                'comentarios' => $avaliacao->comentario_qualidade,
+                'pontos_melhoria' => null,
+                'created_at' => $avaliacao->created_at?->format('d/m/Y H:i'),
+            ])
+            ->values()
+            ->all();
 
         /*
          * DADOS ENVIADOS AO PAINEL ADMINISTRATIVO.
@@ -515,15 +754,10 @@ class AdminController extends Controller
             ],
 
             'avaliacoes' => $avaliacoes,
-
             'avaliadoresPorPerfil' => $avaliadoresPorPerfil,
 
             'indicadores' => [
-                'triagens_concluidas' => Triagem::where(
-                    'status',
-                    'concluida'
-                )->count(),
-
+                'triagens_concluidas' => $triagensConcluidas,
                 'triagens_avaliadas' => $triagensAvaliadas,
                 'total_avaliacoes' => $totalAvaliacoes,
                 'concordantes' => $concordantes,
@@ -541,7 +775,6 @@ class AdminController extends Controller
                 'media' => $mediaQualidade !== null
                     ? round((float) $mediaQualidade, 2)
                     : null,
-
                 'total_avaliacoes' => $quantidadeNotas,
                 'distribuicao' => $notasQualidade,
             ],
@@ -550,6 +783,25 @@ class AdminController extends Controller
             'consumoPorModelo' => $consumoPorModelo,
             'registrosGemini' => $registrosGemini,
             'convites' => $convites,
+
+            /*
+             * PROPRIEDADES DA ABA EFICIÊNCIA DA IA.
+             */
+            'eficienciaIA' => $eficienciaIA,
+            'eficienciaPorPerfil' => $eficienciaPorPerfil,
+            'comentariosEficiencia' => $comentariosEficiencia,
+            'indicadoresPaciente' => $indicadoresPaciente,
+
+            /*
+             * AVALIAÇÕES MÉDICAS, PARA INDICADORES ADICIONAIS.
+             */
+            'indicadoresAvaliacoesMedicas' => [
+                'total_com_nota' => $totalAvaliacoesMedicasComNota,
+                'media_qualidade' => $mediaQualidadeMedica !== null
+                    ? round((float) $mediaQualidadeMedica, 2)
+                    : null,
+                'comentarios' => $comentariosMedicos,
+            ],
         ]);
     }
 

@@ -1,7 +1,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { Head, useForm, usePage } from '@inertiajs/vue3'
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3'
 
 import CabecalhoAvaliacao from './components/CabecalhoAvaliacao.vue'
 import ListaTriagens from './components/ListaTriagens.vue'
@@ -34,6 +34,7 @@ const logoutForm = useForm({})
 
 onMounted(() => {
     const temaSalvo = localStorage.getItem('avaliacao-triagens-tema')
+
     darkMode.value = temaSalvo === 'dark'
 
     document.documentElement.classList.toggle('dark', darkMode.value)
@@ -54,12 +55,14 @@ function alternarTema() {
 
 function iniciarAvaliacao(triagem) {
     selecionada.value = triagem
+
     form.reset()
     form.clearErrors()
 }
 
 function cancelarAvaliacao() {
     selecionada.value = null
+
     form.reset()
     form.clearErrors()
 }
@@ -74,6 +77,7 @@ function enviarAvaliacao() {
 
         onSuccess: () => {
             selecionada.value = null
+
             form.reset()
             form.clearErrors()
         },
@@ -104,6 +108,7 @@ function logout() {
                 @logout="logout"
             />
 
+            <!-- Mensagem de sucesso -->
             <div
                 v-if="page.props.flash?.success"
                 role="status"
@@ -112,6 +117,7 @@ function logout() {
                 {{ page.props.flash.success }}
             </div>
 
+            <!-- Mensagem de erro -->
             <div
                 v-if="page.props.flash?.error"
                 role="alert"
@@ -120,12 +126,95 @@ function logout() {
                 {{ page.props.flash.error }}
             </div>
 
-            <ListaTriagens
-                v-if="!selecionada"
-                :triagens="triagensDisponiveis"
-                @selecionar="iniciarAvaliacao"
-            />
+            <!-- Lista de triagens e acesso à avaliação geral -->
+            <div v-if="!selecionada" class="space-y-5">
+                <Link
+                    href="/avaliacao/eficiencia"
+                    class="group block rounded-2xl border border-emerald-200 bg-white p-5 shadow-sm transition hover:border-emerald-400 hover:shadow-md dark:border-emerald-900 dark:bg-slate-900 dark:hover:border-emerald-700 sm:p-6"
+                >
+                    <div class="flex items-start gap-4">
+                        <div
+                            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M9 12l2 2 4-4"
+                                />
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 3l7 4v5c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V7l7-4z"
+                                />
+                            </svg>
+                        </div>
 
+                        <div class="min-w-0 flex-1">
+                            <div
+                                class="flex flex-wrap items-center gap-2"
+                            >
+                                <h2
+                                    class="text-lg font-semibold text-slate-900 dark:text-white"
+                                >
+                                    Avaliação geral da eficiência da IA
+                                </h2>
+
+                                <span
+                                    class="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                                >
+                                    Avaliação geral
+                                </span>
+                            </div>
+
+                            <p
+                                class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300"
+                            >
+                                Avalie a clareza das perguntas, a relevância
+                                das informações coletadas, a qualidade das
+                                respostas e a utilidade dos resumos gerados
+                                pela inteligência artificial.
+                            </p>
+
+                            <span
+                                class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 group-hover:text-emerald-800 dark:text-emerald-400 dark:group-hover:text-emerald-300"
+                            >
+                                Acessar avaliação geral
+
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M5 12h14m-6-6l6 6-6 6"
+                                    />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </Link>
+
+                <!-- Avaliação individual de cada triagem -->
+                <ListaTriagens
+                    :triagens="triagensDisponiveis"
+                    @selecionar="iniciarAvaliacao"
+                />
+            </div>
+
+            <!-- Formulário de avaliação individual -->
             <template v-else>
                 <ResumoTriagem
                     :triagem="selecionada"

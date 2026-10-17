@@ -8,6 +8,10 @@ const props = defineProps({
         type: Object,
         required: true,
     },
+    feedbackEnviado: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 const mensagem = ref('')
@@ -17,7 +21,8 @@ const chatContainer = ref(null)
 function scrollToBottom() {
     nextTick(() => {
         if (chatContainer.value) {
-            chatContainer.value.scrollTop = chatContainer.value.scrollHeight
+            chatContainer.value.scrollTop =
+                chatContainer.value.scrollHeight
         }
     })
 }
@@ -37,13 +42,28 @@ function formatarData(data) {
 
 function formatarStatus(status) {
     const statusMap = {
-        pendente: { label: 'Pendente', class: 'bg-slate-100 text-slate-800 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700' },
-        em_andamento: { label: 'Em andamento', class: 'bg-amber-50 text-amber-800 ring-amber-600/20 dark:bg-amber-950/60 dark:text-amber-300 dark:ring-amber-500/30' },
-        concluida: { label: 'Concluída', class: 'bg-emerald-50 text-emerald-800 ring-emerald-600/20 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-500/30' },
-        cancelada: { label: 'Cancelada', class: 'bg-rose-50 text-rose-800 ring-rose-600/20 dark:bg-rose-950/60 dark:text-rose-300 dark:ring-rose-500/30' },
+        pendente: {
+            label: 'Pendente',
+            class: 'bg-slate-100 text-slate-800 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700',
+        },
+        em_andamento: {
+            label: 'Em andamento',
+            class: 'bg-amber-50 text-amber-800 ring-amber-600/20 dark:bg-amber-950/60 dark:text-amber-300 dark:ring-amber-500/30',
+        },
+        concluida: {
+            label: 'Concluída',
+            class: 'bg-emerald-50 text-emerald-800 ring-emerald-600/20 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-500/30',
+        },
+        cancelada: {
+            label: 'Cancelada',
+            class: 'bg-rose-50 text-rose-800 ring-rose-600/20 dark:bg-rose-950/60 dark:text-rose-300 dark:ring-rose-500/30',
+        },
     }
 
-    return statusMap[status] ?? { label: status ?? '—', class: 'bg-slate-100 text-slate-700 ring-slate-500/10 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700' }
+    return statusMap[status] ?? {
+        label: status ?? '—',
+        class: 'bg-slate-100 text-slate-700 ring-slate-500/10 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700',
+    }
 }
 
 function formatarPrioridade(prioridade) {
@@ -83,9 +103,7 @@ function enviarMensagem() {
 
     router.post(
         `/triagens/${props.triagem.id}/mensagens`,
-        {
-            mensagem: texto,
-        },
+        { mensagem: texto },
         {
             preserveScroll: true,
 
@@ -112,6 +130,8 @@ function enviarMensagem() {
     <AuthenticatedLayout>
         <div class="min-h-screen bg-slate-50/50 px-4 py-8 transition-colors duration-200 sm:px-6 lg:px-8 dark:bg-slate-950">
             <div class="mx-auto max-w-4xl">
+
+                
 
                 <!-- CABEÇALHO -->
                 <div class="mb-8">
@@ -199,12 +219,16 @@ function enviarMensagem() {
                                     stroke="currentColor"
                                     class="h-5 w-5"
                                 >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 0-.75 0 .375.375 0 0 1 0 .75Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 0 .75 0 .375 0 0 1 0-.75Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a.75.75 0 0 1-.816-.816 6.008 6.008 0 0 1 1.057-2.836A7.476 7.476 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 0-.75 0 .375.375 0 0 1 0 .75Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 0 .75 0 .375.375 0 0 1 0-.75Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a.75.75 0 0 1-.816-.816 6.008 6.008 0 0 1 1.057-2.836A7.476 7.476 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
                                 </svg>
                             </div>
                             <div>
-                                <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Conversa da triagem</h2>
-                                <p class="text-sm text-slate-500 dark:text-slate-400">Responda às perguntas para fornecer as informações necessárias.</p>
+                                <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                                    Conversa da triagem2
+                                </h2>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">
+                                    Responda às perguntas para fornecer as informações necessárias.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -212,9 +236,8 @@ function enviarMensagem() {
                     <!-- ÁREA DE MENSAGENS -->
                     <div
                         ref="chatContainer"
-                        class="max-h-[500px] overflow-y-auto space-y-4 p-6 sm:p-8"
+                        class="max-h-[500px] space-y-4 overflow-y-auto p-6 sm:p-8"
                     >
-                        <!-- ESTADO SEM MENSAGENS -->
                         <div
                             v-if="!triagem.mensagens || triagem.mensagens.length === 0"
                             class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center dark:border-slate-800 dark:bg-slate-950/50"
@@ -228,11 +251,13 @@ function enviarMensagem() {
                                     stroke="currentColor"
                                     class="h-6 w-6"
                                 >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 0 .75Zm0 0h-.375" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 0a.375.375 0 0 1 0 .75Zm0 0h-.375" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 12c0 4.556-4.03 8.25-9 8.25s-9-3.694-9-8.25 4.03-8.25 9-8.25 9 3.694 9 8.25Z" />
                                 </svg>
                             </div>
-                            <h3 class="mt-4 text-sm font-bold text-slate-900 dark:text-slate-100">Vamos começar</h3>
+                            <h3 class="mt-4 text-sm font-bold text-slate-900 dark:text-slate-100">
+                                Vamos começar
+                            </h3>
                             <p class="mx-auto mt-1 max-w-md text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                                 Descreva o principal sintoma ou motivo pelo qual você está realizando esta triagem.
                             </p>
@@ -254,7 +279,9 @@ function enviarMensagem() {
                                 <p class="whitespace-pre-wrap">{{ item.mensagem }}</p>
                                 <p
                                     class="mt-1.5 text-[11px]"
-                                    :class="item.remetente === 'paciente' ? 'text-emerald-100 dark:text-emerald-200' : 'text-slate-400 dark:text-slate-500'"
+                                    :class="item.remetente === 'paciente'
+                                        ? 'text-emerald-100 dark:text-emerald-200'
+                                        : 'text-slate-400 dark:text-slate-500'"
                                 >
                                     {{ formatarData(item.enviada_em) }}
                                 </p>
@@ -262,7 +289,7 @@ function enviarMensagem() {
                         </div>
                     </div>
 
-                    <!-- CAMPO DE ENVIO -->
+                    <!-- CAMPO DE ENVIO OU AVISO DE FINALIZAÇÃO -->
                     <div
                         v-if="triagem.status === 'em_andamento'"
                         class="border-t border-slate-100 bg-slate-50/70 p-5 sm:p-6 dark:border-slate-800 dark:bg-slate-900/60"
@@ -296,7 +323,9 @@ function enviarMensagem() {
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                 </svg>
-                                <span>{{ enviando ? 'Enviando...' : 'Enviar resposta' }}</span>
+                                <span>
+                                    {{ enviando ? 'Enviando...' : 'Enviar resposta' }}
+                                </span>
                             </button>
                         </form>
 
@@ -305,7 +334,6 @@ function enviarMensagem() {
                         </p>
                     </div>
 
-                    <!-- TRIAGEM FINALIZADA -->
                     <div
                         v-else
                         class="border-t border-slate-100 bg-slate-50 px-6 py-5 text-center dark:border-slate-800 dark:bg-slate-950/40"
@@ -314,6 +342,40 @@ function enviarMensagem() {
                             Esta triagem não está mais em andamento.
                         </p>
                     </div>
+
+                    <!-- FEEDBACK DA TRIAGEM CONCLUÍDA -->
+                    <div
+                        v-if="triagem.status === 'concluida'"
+                        class="border-t border-slate-100 bg-white px-6 py-5 dark:border-slate-800 dark:bg-slate-900"
+                    >
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">
+                                    Como foi sua experiência?
+                                </h3>
+                                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                                    Seu feedback nos ajuda a melhorar o sistema.
+                                </p>
+                            </div>
+
+                            <Link
+                                v-if="!feedbackEnviado"
+                                :href="`/triagens/${triagem.id}/feedback`"
+                                class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                            >
+                                <span aria-hidden="true">★</span>
+                                Avaliar minha experiência
+                            </Link>
+
+                            <span
+                                v-else
+                                class="inline-flex shrink-0 items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                            >
+                                <span aria-hidden="true">✓</span>
+                                Feedback enviado
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- RESULTADO DA IA -->
@@ -321,10 +383,14 @@ function enviarMensagem() {
                     v-if="triagem.prioridade_ia || triagem.resumo_ia || triagem.orientacao_ia"
                     class="mt-6 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8 dark:border-slate-800 dark:bg-slate-900"
                 >
-                    <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">Resultado da triagem</h2>
+                    <h2 class="text-base font-bold text-slate-900 dark:text-slate-100">
+                        Resultado da triagem
+                    </h2>
 
                     <div v-if="triagem.prioridade_ia" class="mt-5">
-                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">Prioridade</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                            Prioridade
+                        </p>
                         <span
                             :class="[
                                 'mt-2 inline-flex items-center rounded-lg px-3 py-1.5 text-sm font-bold ring-1 ring-inset',
@@ -336,14 +402,18 @@ function enviarMensagem() {
                     </div>
 
                     <div v-if="triagem.resumo_ia" class="mt-6">
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">Resumo</h3>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">
+                            Resumo
+                        </h3>
                         <p class="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                             {{ triagem.resumo_ia }}
                         </p>
                     </div>
 
                     <div v-if="triagem.orientacao_ia" class="mt-6">
-                        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">Orientação</h3>
+                        <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100">
+                            Orientação
+                        </h3>
                         <p class="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                             {{ triagem.orientacao_ia }}
                         </p>

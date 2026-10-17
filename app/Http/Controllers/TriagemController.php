@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Feedback;
 
 class TriagemController extends Controller
 {
@@ -65,6 +66,9 @@ class TriagemController extends Controller
     /**
      * Exibe uma triagem específica.
      */
+    /**
+     * Exibe uma triagem específica.
+     */
     public function show(
         Request $request,
         Triagem $triagem
@@ -76,8 +80,14 @@ class TriagemController extends Controller
         $triagem = $this->triagemService
             ->buscarDoPaciente($paciente, $triagem);
 
+        $feedbackEnviado = Feedback::query()
+            ->where('user_id', $request->user()->id)
+            ->where('triagem_id', $triagem->id)
+            ->exists();
+
         return Inertia::render('Triagem/Show', [
             'triagem' => $triagem,
+            'feedbackEnviado' => $feedbackEnviado,
         ]);
     }
 
