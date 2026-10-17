@@ -1,4 +1,3 @@
-
 <script setup>
 import { computed, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
@@ -154,7 +153,32 @@ const tituloAba = computed(() => {
 })
 
 function logout() {
-    logoutForm.post(route('logout'))
+    if (logoutForm.processing) {
+        return
+    }
+
+    if (typeof route !== 'function') {
+        console.error(
+            'A função route() não está disponível. Verifique a configuração do Ziggy.'
+        )
+        return
+    }
+
+    logoutForm.post(route('logout'), {
+        preserveScroll: false,
+
+        onSuccess: () => {
+            console.log('Logout realizado com sucesso.')
+        },
+
+        onError: (errors) => {
+            console.error('Erro ao realizar logout:', errors)
+        },
+
+        onFinish: () => {
+            console.log('Requisição de logout finalizada.')
+        },
+    })
 }
 </script>
 
@@ -194,7 +218,11 @@ function logout() {
                         :disabled="logoutForm.processing"
                         class="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {{ logoutForm.processing ? 'Saindo...' : 'Sair' }}
+                        {{
+                            logoutForm.processing
+                                ? 'Saindo...'
+                                : 'Sair'
+                        }}
                     </button>
                 </div>
             </div>

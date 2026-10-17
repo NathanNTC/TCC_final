@@ -131,17 +131,7 @@ function enviarMensagem() {
         <div class="min-h-screen bg-slate-50/50 px-4 py-8 transition-colors duration-200 sm:px-6 lg:px-8 dark:bg-slate-950">
             <div class="mx-auto max-w-4xl">
 
-                <!-- DIAGNÓSTICO TEMPORÁRIO -->
-                <div class="mb-5 rounded-lg border border-yellow-300 bg-yellow-100 p-4 text-sm text-black">
-                    <p>
-                        <strong>Status recebido:</strong>
-                        {{ triagem.status }}
-                    </p>
-                    <p>
-                        <strong>Feedback enviado:</strong>
-                        {{ feedbackEnviado }}
-                    </p>
-                </div>
+                
 
                 <!-- CABEÇALHO -->
                 <div class="mb-8">
