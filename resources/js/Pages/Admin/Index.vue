@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3'
 
 import { useDarkMode } from '@/Composables/useDarkMode'
 
@@ -134,8 +134,7 @@ const props = defineProps({
 const { isDark, alternarTema } = useDarkMode()
 
 const abaAtiva = ref('todos')
-
-const logoutForm = useForm({})
+const saindo = ref(false)
 
 const abas = [
     { id: 'todos', nome: 'Visão geral' },
@@ -153,30 +152,38 @@ const tituloAba = computed(() => {
 })
 
 function logout() {
-    if (logoutForm.processing) {
+    if (saindo.value) {
         return
     }
 
-    if (typeof route !== 'function') {
-        console.error(
-            'A função route() não está disponível. Verifique a configuração do Ziggy.'
-        )
-        return
-    }
+    saindo.value = true
 
-    logoutForm.post(route('logout'), {
+    router.post('/logout', {}, {
+        preserveState: false,
         preserveScroll: false,
 
         onSuccess: () => {
-            console.log('Logout realizado com sucesso.')
+            // Garante que o navegador saia do painel após encerrar a sessão.
+            window.location.href = '/login'
         },
 
         onError: (errors) => {
             console.error('Erro ao realizar logout:', errors)
+            saindo.value = false
+        },
+
+        onHttpException: (error) => {
+            console.error('Erro HTTP ao realizar logout:', error)
+            saindo.value = false
+        },
+
+        onNetworkError: (error) => {
+            console.error('Erro de rede ao realizar logout:', error)
+            saindo.value = false
         },
 
         onFinish: () => {
-            console.log('Requisição de logout finalizada.')
+            saindo.value = false
         },
     })
 }
@@ -215,14 +222,10 @@ function logout() {
                     <button
                         type="button"
                         @click="logout"
-                        :disabled="logoutForm.processing"
+                        :disabled="saindo"
                         class="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        {{
-                            logoutForm.processing
-                                ? 'Saindo...'
-                                : 'Sair'
-                        }}
+                        {{ saindo ? 'Saindo...' : 'Sair' }}
                     </button>
                 </div>
             </div>
@@ -341,7 +344,6 @@ function logout() {
                     :indicadores-paciente="indicadoresPaciente"
                 />
 
-                <!-- AVALIAÇÃO PROFISSIONAL DAS TRIAGENS -->
                 <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
