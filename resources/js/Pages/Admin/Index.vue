@@ -1,6 +1,8 @@
+
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useForm } from '@inertiajs/vue3'
+
 import { useDarkMode } from '@/Composables/useDarkMode'
 
 import IndicadoresAdmin from './components/IndicadoresAdmin.vue'
@@ -8,24 +10,9 @@ import ListaAvaliacoes from './components/ListaAvaliacoes.vue'
 import QualidadeTriagens from './components/QualidadeTriagens.vue'
 import GerenciarConvites from './components/GerenciarConvites.vue'
 import Custos from './components/Custos.vue'
+import EficienciaIA from './components/EficienciaIA.vue'
 
-// Controle de modo escuro
-const { isDark, alternarTema } = useDarkMode()
-
-// Controle de logout
-const logoutForm = useForm({})
-
-function logout() {
-    if (logoutForm.processing) return
-
-    logoutForm.post('/logout')
-}
-
-// Controle da aba ativa
-// Valores: todos, indicadores, avaliacoes, qualidade, custos, convites
-const abaAtiva = ref('todos')
-
-defineProps({
+const props = defineProps({
     filtroPerfil: {
         type: String,
         default: 'todos',
@@ -41,9 +28,21 @@ defineProps({
         default: () => [],
     },
 
+    avaliadoresPorPerfil: {
+        type: Array,
+        default: () => [],
+    },
+
     indicadores: {
         type: Object,
-        default: () => ({}),
+        default: () => ({
+            triagens_concluidas: 0,
+            triagens_avaliadas: 0,
+            total_avaliacoes: 0,
+            concordantes: 0,
+            discordancias: 0,
+            concordancia_percentual: 0,
+        }),
     },
 
     qualidade: {
@@ -60,12 +59,6 @@ defineProps({
         default: () => [],
     },
 
-    avaliadoresPorPerfil: {
-        type: Array,
-        default: () => [],
-    },
-
-    // Consumo agregado da API Gemini
     consumoGemini: {
         type: Object,
         default: () => ({
@@ -74,19 +67,16 @@ defineProps({
         }),
     },
 
-    // Consumo agrupado por modelo
     consumoPorModelo: {
         type: Array,
         default: () => [],
     },
 
-    // Últimos registros de utilização da API
     registrosGemini: {
         type: Array,
         default: () => [],
     },
 
-        // Dados do gráfico de custos
     custosGrafico: {
         type: Array,
         default: () => [],
@@ -96,251 +86,164 @@ defineProps({
         type: String,
         default: 'mes',
     },
+
+    eficienciaIA: {
+        type: Object,
+        default: () => ({
+            total_avaliacoes: 0,
+            media_geral: null,
+            medias: [],
+        }),
+    },
+
+    eficienciaPorPerfil: {
+        type: Array,
+        default: () => [],
+    },
+
+    comentariosEficiencia: {
+        type: Array,
+        default: () => [],
+    },
+
+    indicadoresPaciente: {
+        type: Object,
+        default: () => ({
+            total_pacientes: 0,
+            total_triagens: 0,
+            triagens_concluidas: 0,
+            percentual_concluidas: 0,
+            total_feedbacks: 0,
+            media_nota_pacientes: null,
+            facilidade: [],
+            clareza: [],
+            triagens_por_status: [],
+            triagens_por_prioridade: [],
+        }),
+    },
+
+    indicadoresAvaliacoesMedicas: {
+        type: Object,
+        default: () => ({
+            total_com_nota: 0,
+            media_qualidade: null,
+            comentarios: [],
+        }),
+    },
 })
+
+const { isDark, alternarTema } = useDarkMode()
+
+const abaAtiva = ref('todos')
+
+const logoutForm = useForm({})
+
+const abas = [
+    { id: 'todos', nome: 'Visão geral' },
+    { id: 'indicadores', nome: 'Indicadores' },
+    { id: 'avaliacoes', nome: 'Avaliações médicas' },
+    { id: 'qualidade', nome: 'Qualidade' },
+    { id: 'eficiencia', nome: 'Eficiência da IA' },
+    { id: 'custos', nome: 'Custos da IA' },
+    { id: 'convites', nome: 'Convites' },
+]
+
+const tituloAba = computed(() => {
+    return abas.find((aba) => aba.id === abaAtiva.value)?.nome
+        ?? 'Painel administrativo'
+})
+
+function logout() {
+    logoutForm.post(route('logout'))
+}
 </script>
 
 <template>
-    <div class="min-h-screen bg-slate-50/50 px-4 py-8 sm:px-6 lg:px-8 dark:bg-slate-950">
-        <div class="mx-auto max-w-7xl space-y-8">
-
-            <!-- CABEÇALHO DO PAINEL -->
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="min-h-screen bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
+        <!-- CABEÇALHO -->
+        <header class="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div class="mx-auto flex max-w-screen-2xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
                 <div>
-                    <div class="flex items-center gap-2.5">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-600/10 dark:bg-emerald-950/50 dark:text-emerald-400 dark:ring-emerald-500/20">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.8"
-                                stroke="currentColor"
-                                class="h-5 w-5"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z"
-                                />
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z"
-                                />
-                            </svg>
-                        </div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-400">
+                        Administração
+                    </p>
 
-                        <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-100">
-                            Painel administrativo
-                        </h1>
-                    </div>
+                    <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        Painel administrativo
+                    </h1>
 
-                    <p class="mt-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                        Acompanhe indicadores gerais, avaliações médicas,
-                        qualidade, consumo da IA e gestão de convites.
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        Indicadores, avaliações, eficiência e utilização da IA.
                     </p>
                 </div>
 
-                <!-- STATUS, BOTÃO DE MODO ESCURO E BOTÃO DE LOGOUT -->
-                <div class="flex flex-wrap items-center gap-3">
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-950/50 dark:text-emerald-400 dark:ring-emerald-500/30">
-                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                        Modo Administrador
-                    </span>
-
-                    <!-- BOTÃO ALTERNAR MODO ESCURO -->
+                <div class="flex flex-wrap items-center gap-2">
                     <button
                         type="button"
                         @click="alternarTema"
-                        class="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 cursor-pointer"
-                        :title="isDark ? 'Mudar para modo claro' : 'Mudar para modo escuro'"
+                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                        :aria-label="isDark ? 'Ativar tema claro' : 'Ativar tema escuro'"
                     >
-                        <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-amber-400">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
-                        </svg>
-
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 text-slate-600">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
-                        </svg>
+                        <span>{{ isDark ? '☀️' : '🌙' }}</span>
+                        <span>{{ isDark ? 'Tema claro' : 'Tema escuro' }}</span>
                     </button>
 
                     <button
                         type="button"
                         @click="logout"
                         :disabled="logoutForm.processing"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 shadow-sm transition hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900/50 dark:bg-slate-900 dark:text-red-400 dark:hover:bg-red-950/30 cursor-pointer"
+                        class="inline-flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-4 w-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
-                            />
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M16 17l5-5-5-5M21 12H9"
-                            />
-                        </svg>
-
                         {{ logoutForm.processing ? 'Saindo...' : 'Sair' }}
                     </button>
                 </div>
             </div>
+        </header>
 
-            <!-- NAVEGAÇÃO DE ABAS -->
-            <div class="border-b border-slate-200 dark:border-slate-800">
-                <nav
-                    class="-mb-px flex space-x-6 overflow-x-auto pb-1"
-                    aria-label="Abas de navegação"
-                >
-                    <!-- VISÃO GERAL -->
+        <main class="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 lg:px-8">
+            <!-- NAVEGAÇÃO ENTRE ABAS -->
+            <nav
+                aria-label="Seções do painel administrativo"
+                class="mb-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+            >
+                <div class="flex min-w-max gap-2">
                     <button
+                        v-for="aba in abas"
+                        :key="aba.id"
                         type="button"
-                        @click="abaAtiva = 'todos'"
+                        @click="abaAtiva = aba.id"
+                        :aria-current="abaAtiva === aba.id ? 'page' : undefined"
                         :class="[
-                            abaAtiva === 'todos'
-                                ? 'border-emerald-600 text-emerald-600 dark:border-emerald-500 dark:text-emerald-400'
-                                : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
-                            'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-1 pb-3 text-sm font-semibold transition-all'
+                            'rounded-xl px-4 py-2.5 text-sm font-semibold transition',
+                            abaAtiva === aba.id
+                                ? 'bg-emerald-600 text-white shadow-sm'
+                                : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800',
                         ]"
-                        :aria-current="abaAtiva === 'todos' ? 'page' : undefined"
                     >
-                        Visão Geral
+                        {{ aba.nome }}
                     </button>
+                </div>
+            </nav>
 
-                    <!-- INDICADORES -->
-                    <button
-                        type="button"
-                        @click="abaAtiva = 'indicadores'"
-                        :class="[
-                            abaAtiva === 'indicadores'
-                                ? 'border-emerald-600 text-emerald-600 dark:border-emerald-500 dark:text-emerald-400'
-                                : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
-                            'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-1 pb-3 text-sm font-semibold transition-all'
-                        ]"
-                        :aria-current="abaAtiva === 'indicadores' ? 'page' : undefined"
-                    >
-                        Indicadores
-                    </button>
-
-                    <!-- AVALIAÇÕES -->
-                    <button
-                        type="button"
-                        @click="abaAtiva = 'avaliacoes'"
-                        :class="[
-                            abaAtiva === 'avaliacoes'
-                                ? 'border-emerald-600 text-emerald-600 dark:border-emerald-500 dark:text-emerald-400'
-                                : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
-                            'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-1 pb-3 text-sm font-semibold transition-all'
-                        ]"
-                        :aria-current="abaAtiva === 'avaliacoes' ? 'page' : undefined"
-                    >
-                        Avaliações
-
-                        <span
-                            v-if="avaliacoes.length"
-                            class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                        >
-                            {{ avaliacoes.length }}
-                        </span>
-                    </button>
-
-                    <!-- QUALIDADE -->
-                    <button
-                        type="button"
-                        @click="abaAtiva = 'qualidade'"
-                        :class="[
-                            abaAtiva === 'qualidade'
-                                ? 'border-emerald-600 text-emerald-600 dark:border-emerald-500 dark:text-emerald-400'
-                                : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
-                            'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-1 pb-3 text-sm font-semibold transition-all'
-                        ]"
-                        :aria-current="abaAtiva === 'qualidade' ? 'page' : undefined"
-                    >
-                        Qualidade
-                    </button>
-
-                    <!-- CUSTOS DA IA -->
-                    <button
-                        type="button"
-                        @click="abaAtiva = 'custos'"
-                        :class="[
-                            abaAtiva === 'custos'
-                                ? 'border-emerald-600 text-emerald-600 dark:border-emerald-500 dark:text-emerald-400'
-                                : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
-                            'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-1 pb-3 text-sm font-semibold transition-all'
-                        ]"
-                        :aria-current="abaAtiva === 'custos' ? 'page' : undefined"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-4 w-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 3v18m5-14H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H6"
-                            />
-                        </svg>
-
-                        Custos IA
-                    </button>
-
-                    <!-- CONVITES -->
-                    <button
-                        type="button"
-                        @click="abaAtiva = 'convites'"
-                        :class="[
-                            abaAtiva === 'convites'
-                                ? 'border-emerald-600 text-emerald-600 dark:border-emerald-500 dark:text-emerald-400'
-                                : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200',
-                            'flex shrink-0 cursor-pointer items-center gap-2 border-b-2 px-1 pb-3 text-sm font-semibold transition-all'
-                        ]"
-                        :aria-current="abaAtiva === 'convites' ? 'page' : undefined"
-                    >
-                        Convites
-
-                        <span
-                            v-if="convites.length"
-                            class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                        >
-                            {{ convites.length }}
-                        </span>
-                    </button>
-                </nav>
+            <!-- TÍTULO DA SEÇÃO -->
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white">
+                    {{ tituloAba }}
+                </h2>
             </div>
 
-            <!-- CONTEÚDO DAS ABAS -->
-            <div class="space-y-8">
+            <!-- VISÃO GERAL -->
+            <div v-if="abaAtiva === 'todos'" class="space-y-8">
+                <IndicadoresAdmin
+                    :indicadores="indicadores"
+                    :avaliadores-por-perfil="avaliadoresPorPerfil"
+                />
 
-                <!-- SEÇÃO: INDICADORES -->
-                <section
-                    v-if="abaAtiva === 'todos' || abaAtiva === 'indicadores'"
-                >
-                    <IndicadoresAdmin
-                        :indicadores="indicadores"
-                        :qualidade="qualidade"
-                        :filtro-perfil="filtroPerfil"
-                        :opcoes-perfil="opcoesPerfil"
-                        :avaliadores-por-perfil="avaliadoresPorPerfil"
-                    />
-                </section>
+                <section>
+                    <h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                        Avaliações médicas recentes
+                    </h3>
 
-                <!-- SEÇÃO: AVALIAÇÕES -->
-                <section
-                    v-if="abaAtiva === 'todos' || abaAtiva === 'avaliacoes'"
-                >
                     <ListaAvaliacoes
                         :avaliacoes="avaliacoes"
                         :filtro-perfil="filtroPerfil"
@@ -348,19 +251,19 @@ defineProps({
                     />
                 </section>
 
-                <!-- SEÇÃO: QUALIDADE -->
-                <section
-                    v-if="abaAtiva === 'todos' || abaAtiva === 'qualidade'"
-                >
-                    <QualidadeTriagens
-                        :qualidade="qualidade"
-                    />
+                <section>
+                    <h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                        Qualidade das avaliações
+                    </h3>
+
+                    <QualidadeTriagens :qualidade="qualidade" />
                 </section>
 
-                <!-- SEÇÃO: CUSTOS E CONSUMO DO GEMINI -->
-                <section
-                    v-if="abaAtiva === 'todos' || abaAtiva === 'custos'"
-                >
+                <section>
+                    <h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                        Consumo e custos da IA
+                    </h3>
+
                     <Custos
                         :consumo-gemini="consumoGemini"
                         :consumo-por-modelo="consumoPorModelo"
@@ -370,16 +273,89 @@ defineProps({
                     />
                 </section>
 
-                <!-- SEÇÃO: CONVITES -->
-                <section
-                    v-if="abaAtiva === 'todos' || abaAtiva === 'convites'"
-                >
-                    <GerenciarConvites
-                        :convites="convites"
-                    />
-                </section>
+                <section>
+                    <h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                        Gerenciamento de convites
+                    </h3>
 
+                    <GerenciarConvites :convites="convites" />
+                </section>
             </div>
-        </div>
+
+            <!-- INDICADORES -->
+            <section v-else-if="abaAtiva === 'indicadores'">
+                <IndicadoresAdmin
+                    :indicadores="indicadores"
+                    :avaliadores-por-perfil="avaliadoresPorPerfil"
+                />
+            </section>
+
+            <!-- AVALIAÇÕES MÉDICAS -->
+            <section v-else-if="abaAtiva === 'avaliacoes'">
+                <ListaAvaliacoes
+                    :avaliacoes="avaliacoes"
+                    :filtro-perfil="filtroPerfil"
+                    :opcoes-perfil="opcoesPerfil"
+                />
+            </section>
+
+            <!-- QUALIDADE DAS TRIAGENS -->
+            <section v-else-if="abaAtiva === 'qualidade'">
+                <QualidadeTriagens :qualidade="qualidade" />
+            </section>
+
+            <!-- EFICIÊNCIA DA IA -->
+            <section v-else-if="abaAtiva === 'eficiencia'">
+                <EficienciaIA
+                    :eficiencia-i-a="eficienciaIA"
+                    :eficiencia-por-perfil="eficienciaPorPerfil"
+                    :comentarios-eficiencia="comentariosEficiencia"
+                    :indicadores-paciente="indicadoresPaciente"
+                />
+
+                <!-- AVALIAÇÃO PROFISSIONAL DAS TRIAGENS -->
+                <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                            Avaliações médicas com nota
+                        </p>
+
+                        <p class="mt-3 text-3xl font-bold text-slate-900 dark:text-white">
+                            {{ indicadoresAvaliacoesMedicas.total_com_nota }}
+                        </p>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                            Nota média de qualidade das triagens
+                        </p>
+
+                        <p class="mt-3 text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+                            {{
+                                indicadoresAvaliacoesMedicas.media_qualidade !== null
+                                    ? `${Number(indicadoresAvaliacoesMedicas.media_qualidade).toFixed(2)} / 5`
+                                    : '—'
+                            }}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CUSTOS DA IA -->
+            <section v-else-if="abaAtiva === 'custos'">
+                <Custos
+                    :consumo-gemini="consumoGemini"
+                    :consumo-por-modelo="consumoPorModelo"
+                    :registros-gemini="registrosGemini"
+                    :custos-grafico="custosGrafico"
+                    :periodo-custos-grafico="periodoCustosGrafico"
+                />
+            </section>
+
+            <!-- CONVITES -->
+            <section v-else-if="abaAtiva === 'convites'">
+                <GerenciarConvites :convites="convites" />
+            </section>
+        </main>
     </div>
 </template>
