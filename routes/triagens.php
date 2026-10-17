@@ -3,6 +3,7 @@
 use App\Http\Controllers\TriagemController;
 use App\Http\Controllers\TriagemMensagemController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FeedbackController;
 
 Route::middleware('auth')->group(function () {
 
@@ -30,5 +31,17 @@ Route::middleware('auth')->group(function () {
         TriagemController::class,
         'show',
     ])->name('triagens.show');
+
+    Route::get(
+    '/triagens/{triagem}/feedback',
+    [FeedbackController::class, 'create']
+    )->middleware('role:Paciente')
+    ->name('feedback.create');
+
+    Route::post(
+        '/triagens/{triagem}/feedback',
+        [FeedbackController::class, 'store']
+    )->middleware('role:Paciente')
+    ->name('feedback.store');
 });
 
